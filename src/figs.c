@@ -31,3 +31,7 @@ void paste() {
 void delete() {
   printf("Delete\n");
 }
+
+void color_set() {
+  printf("Color set\n");
+}
