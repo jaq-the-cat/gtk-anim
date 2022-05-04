@@ -386,9 +386,17 @@
               </packing>
             </child>
             <child>
-              <object class="GtkDrawingArea">
+              <object class="GtkGLArea">
                 <property name="visible">True</property>
+                <property name="app-paintable">True</property>
                 <property name="can-focus">False</property>
+                <property name="has-alpha">True</property>
+                <property name="has-depth-buffer">True</property>
+                <property name="has-stencil-buffer">True</property>
+                <signal name="realize" handler="gl_init" swapped="no"/>
+                <signal name="render" handler="gl_render" swapped="no"/>
+                <signal name="resize" handler="gl_resize" swapped="no"/>
+                <signal name="unrealize" handler="gl_destroy" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>

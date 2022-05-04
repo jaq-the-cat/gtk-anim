@@ -3,7 +3,7 @@ PKGS    := gtk+-3.0
 CC      := clang
 CFLAGS  := -Iheaders
 CFLAGS  += -Wall -O2 -std=c17 -rdynamic $(shell pkg-config --cflags $(PKGS))
-LDFLAGS := $(shell pkg-config --libs $(PKGS))
+LDFLAGS := -lGL $(shell pkg-config --libs $(PKGS))
 
 .PHONY: dev clean compile cnr
 	
