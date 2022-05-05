@@ -6,8 +6,8 @@
   GTK_WIDGET(gtk_builder_get_object(builder, id))
 
 // Widget with constructor outside of scope
-#define WIDGET_S(type, varname, id) \
-  type *varname; \
+#define WIDGET_S(varname, id) \
+  GtkWidget *varname; \
   void init_##varname(GtkBuilder* builder) { \
      varname = GTK_WIDGET(gtk_builder_get_object(builder, id)); \
   };
