@@ -33,23 +33,20 @@ int main(int argc, char* argv[]) {
 }
 
 gboolean render(GtkWidget *widget, cairo_t *cr, gpointer data) {
+  cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+
   GtkStyleContext *context = gtk_widget_get_style_context(widget);
   guint width = gtk_widget_get_allocated_width(widget);
   guint height = gtk_widget_get_allocated_height(widget);
 
-  GdkRGBA color = {
-    1.0, 1.0, 1.0, 1.0
-  };
-  /*gtk_style_context_get_color(context, gtk_style_context_get_state(context), &color);*/
-
-  static float x;
-
-  x += 1;
+  GdkRGBA color;
+  /*GdkRGBA color = {*/
+    /*1.0, 1.0, 1.0, 1.0*/
+  /*};*/
+  gtk_style_context_get_color(context, gtk_style_context_get_state(context), &color);
 
   gtk_render_background(context, cr, 0, 0, width, height);
-  cairo_arc(cr, x, height/2.0, MIN(width, height) / 2.0, 0, 2 * G_PI);
-  gdk_cairo_set_source_rgba(cr, &color);
-  cairo_fill(cr);
+
 
   return FALSE;
 }
