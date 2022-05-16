@@ -1,4 +1,6 @@
-SRC     := $(wildcard src/*.c)
+ALLSRC  := $(wildcard src/*.c)
+SRC     := $(filter-out src/test.c, $(ALLSRC))
+TESTSRC := $(filter-out src/main.c, $(ALLSRC))
 PKGS    := gtk+-3.0
 CC      := clang
 CFLAGS  := -Iheaders
@@ -19,7 +21,15 @@ clean:
 compile: $(SRC)
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o a.out
 
+test-compile: $(SRC)
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o a.out
+
 cnr: $(SRC)
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o a.out
+	./a.out
+	$(RM) *.o a.out
+
+tnr: $(TESTSRC)
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o a.out
 	./a.out
 	$(RM) *.o a.out

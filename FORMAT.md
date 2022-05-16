@@ -7,6 +7,10 @@
 - [ ] Image support
 - [ ] 0 thickness line to move image
 
+- Implementation
+  - Tree structure
+  - Store in binary format
+
 # GTKvot Project Format (.gpf)
 - [ ] Figure list
 - [ ] Figure and movable segment position
