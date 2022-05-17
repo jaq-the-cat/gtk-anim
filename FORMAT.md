@@ -1,17 +1,15 @@
-# GTKvot Figure Format (.gff)
-- [ ] Center point
-- [ ] Lines with thickness
+# gtk-anim Figure Format (.gff)
+- [X] Center point
+- [X] Lines with thickness
   - Connect to root point, move around it
-  - Root point may be any point
-- [ ] Filled, empty and white circles
+- [X] Filled, empty and white circles
 - [ ] Image support
-- [ ] 0 thickness line to move image
 
-- Implementation
-  - Tree structure
-  - Store in binary format
+  - [X] Implementation
+    - Tree structure
+    - Store in binary format
 
-# GTKvot Project Format (.gpf)
-- [ ] Figure list
-- [ ] Figure and movable segment position
-- [ ] TODO: rest
+# gtk-anim Project Format (.gpf)
+- [ ] Loaded figure list
+- [ ] Positions for each figure node and their children
+- [ ] Whether the figure is in the frame or not

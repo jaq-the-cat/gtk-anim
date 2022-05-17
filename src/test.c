@@ -1,13 +1,5 @@
 #include "figs.h"
 
-#define FIG(x, y, shape, thickness, r, g, b, children_count)\
-  (figure) {\
-    x, y, shape, thickness,\
-    (GdkRGBA) { r, g, b, 1 },\
-    children_count,\
-    malloc(sizeof(figure)*children_count)\
-  }
-
 void print_fig(figure fig) {
   printf("{ %d %d %d %d } ", fig.x, fig.y, fig.thickness, fig.children_count);
   for (int i=0; i<fig.children_count; i++) {
@@ -17,11 +9,11 @@ void print_fig(figure fig) {
 }
 
 figure make_fig() {
-  figure a = FIG(1, 1, Line, 10, 1, 0, 1, 2);
+  figure a = FIG(1, 1, S_LINE, 10, 1, 0, 1, 2);
 
-  a.children[0] = FIG(0, 0, Line, 5, 1, 0, 1, 1);
-  a.children[0].children[0] = FIG(-2, 0, Line, 5, 1, 0, 1, 0);
-  a.children[1] = FIG(2, 2, Line, 5, 1, 0, 1, 0);
+  a.children[0] = FIG(0, 0, S_LINE, 5, 1, 0, 1, 1);
+  a.children[0].children[0] = FIG(-2, 0, S_LINE, 5, 1, 0, 1, 0);
+  a.children[1] = FIG(2, 2, S_LINE, 5, 1, 0, 1, 0);
 
   return a;
 }
