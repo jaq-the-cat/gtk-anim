@@ -7,10 +7,10 @@ const GdkRGBA WHITE = {1, 1, 1, 1};
 #define DRAW_SETUP\
   gdk_cairo_set_source_rgba(cr, color);\
   cairo_set_line_width(cr, width);\
-  cairo_move_to(cr, x0, y0);
+  cairo_move_to(cr, x0, y0)
 
 void draw_line(_draw_arglist) {
-  DRAW_SETUP
+  DRAW_SETUP;
   cairo_line_to(cr, x1, y1);
   cairo_stroke(cr);
 }
@@ -22,18 +22,19 @@ float point_distance(x0, y0, x1, y1) {
 }
 
 void draw_white(_draw_arglist) {
-  DRAW_SETUP
+  draw_filled(cr, color, x0, y0, x1, y1, width);
+  DRAW_SETUP; // and draw white circle
+  gdk_cairo_set_source_rgba(cr, &WHITE);
   float xc = (x0+x1)/2;
   float yc = (y0+y1)/2;
-  float radius = point_distance(x0, y0, x1, y1)/2;
+  float radius = point_distance(x0, y0, x1, y1)/2 - width;
   cairo_arc(cr, xc, yc, radius, 0, 2*G_PI); // main circle
-  gdk_cairo_set_source_rgba(cr, &WHITE);
-  cairo_arc(cr, xc, yc, radius-width, 0, 2*G_PI); // white circle
+  cairo_fill(cr);
   cairo_stroke(cr);
 }
 
 void draw_empty(_draw_arglist) {
-  DRAW_SETUP
+  DRAW_SETUP;
   float xc = (x0+x1)/2;
   float yc = (y0+y1)/2;
   float radius = point_distance(x0, y0, x1, y1)/2;
@@ -42,7 +43,7 @@ void draw_empty(_draw_arglist) {
 }
 
 void draw_filled(_draw_arglist) {
-  DRAW_SETUP
+  DRAW_SETUP;
   float xc = (x0+x1)/2;
   float yc = (y0+y1)/2;
   float radius = point_distance(x0, y0, x1, y1)/2;
