@@ -16,7 +16,7 @@
 
 typedef struct figure {
   guint32 x, y; // endpoint x and y (root is parent node)
-  guint8 shp; // shape of current node
+  guint8 shp : 2; // shape of current node
   guint16 thickness;
   GdkRGBA color; // color, alpha always 1.0 (fully opaque)
   guint16 children_count;
@@ -25,7 +25,7 @@ typedef struct figure {
 
 typedef struct figure_nc { // no children
   guint32 x, y;
-  guint8 shp;
+  guint8 shp : 2;
   guint16 thickness;
   GdkRGBA color;
   guint16 children_count;
