@@ -31,5 +31,7 @@ typedef struct figure_nc { // no children
   guint16 children_count;
 } figure_nc;
 
-void fig_serialize(figure fig, char* filename);
+void fig_serialize(figure *fig, char* filename);
 figure fig_unseralize(char* filename);
+void fig_draw(figure *fig, cairo_t *cr);
+void fig_free(figure *fig);
