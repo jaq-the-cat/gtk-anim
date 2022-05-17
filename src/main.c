@@ -48,19 +48,15 @@ gboolean render(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
   gtk_render_background(context, cr, 0, 0, width, height);
 
-  figure fig = FIG(150, 150, S_LINE, 5, 1, 0, 0, 1);
+  figure fig = FIG(150, 150, S_LINE, 5, 1, 0, 0, 3); // core
 
-  fig.children[0] = FIG(0, -50, S_EMPTYCIRCLE, 5, 0, 1, 0, 0);
+  fig.children[0] = FIG(0, -50, S_LINE, 5, 0, 1, 0, 3); //  upper body
+  fig.children[0].children[0] = FIG(-30, 40, S_LINE, 5, 0, 1, 0, 0); // left arm
+  fig.children[0].children[1] = FIG(30, 40, S_LINE, 5, 0, 1, 0, 0); // right arm
+  fig.children[0].children[2] = FIG(0, -100, S_EMPTYCIRCLE, 5, 0, 1, 0, 0); // head
 
-  /*figure fig = FIG(150, 150, S_LINE, 5, 1, 0, 0, 3); // core*/
-
-  /*fig.children[0] = FIG(0, -50, S_LINE, 5, 0, 1, 0, 3); //  upper body*/
-  /*fig.children[0].children[0] = FIG(-30, 40, S_LINE, 5, 0, 1, 0, 0); // left arm*/
-  /*fig.children[0].children[1] = FIG(30, 40, S_LINE, 5, 0, 1, 0, 0); // right arm*/
-  /*fig.children[0].children[2] = FIG(0, -100, S_EMPTYCIRCLE, 5, 0, 1, 0, 0); // head*/
-
-  /*fig.children[1] = FIG(-20, 50, S_LINE, 5, 0, 1, 0, 0); // left leg*/
-  /*fig.children[2] = FIG(20, 50, S_LINE, 5, 0, 1, 0, 0); // right leg*/
+  fig.children[1] = FIG(-20, 50, S_LINE, 5, 0, 1, 0, 0); // left leg
+  fig.children[2] = FIG(20, 50, S_LINE, 5, 0, 1, 0, 0); // right leg
 
   fig_draw(&fig, cr);
 

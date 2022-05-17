@@ -1,5 +1,6 @@
 #include "figs.h"
 #include "draw.h"
+#include <stdbool.h>
 
 void fig_write_to_file(figure *fig, FILE* f) {
   // remove children so it doesnt write junk
@@ -68,7 +69,7 @@ figure fig_unseralize(char* filename) {
           parent_x+fig->x+child->x, parent_y+fig->y+child->y,\
           child->thickness\
 
-void fig_draw_recursive(figure *fig, cairo_t *cr, guint16 parent_x, guint16 parent_y) {
+void fig_draw_recursive(figure *fig, cairo_t *cr, guint16 parent_x, guint16 parent_y, bool is_root) {
   printf("drawing with abs(%d, %d)\n", parent_x, parent_y);
   figure *child;
   for (int i=0; i<fig->children_count; i++) {
@@ -89,12 +90,17 @@ void fig_draw_recursive(figure *fig, cairo_t *cr, guint16 parent_x, guint16 pare
       default:
         break;
     }
-    fig_draw_recursive(child, cr, parent_x+fig->x, parent_y+fig->y);
+    fig_draw_recursive(child, cr, parent_x+fig->x, parent_y+fig->y, false);
+  }
+  if (is_root) {
+    draw_node(cr, NT_ROOT, parent_x+fig->x, parent_y+fig->y);
+  } else {
+    draw_node(cr, NT_OTHER, parent_x+fig->x, parent_y+fig->y);
   }
 }
 
 void fig_draw(figure *fig, cairo_t *cr) {
-  fig_draw_recursive(fig, cr, fig->x, fig->y);
+  fig_draw_recursive(fig, cr, fig->x, fig->y, true);
 }
 
 void fig_free(figure *fig) {
