@@ -120,8 +120,8 @@ figure* fig_check_clicked(figure *fig, gdouble x, gdouble y) {
 }
 
 void move_figure_node(figure *fig, gdouble x, gdouble y) {
-  /*fig->x = x;*/
-  /*fig->y = y;*/
+  fig->x = x;
+  fig->y = y;
 }
 
 void fig_free(figure *fig) {

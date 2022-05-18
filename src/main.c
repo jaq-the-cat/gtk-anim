@@ -16,6 +16,8 @@ static figures figs = FIGS_LL;
 
 static figure fig1, fig2;
 
+static cairo_t *g_cr;
+
 void init_state() {
   /*fig1 = FIG(100, 100, S_LINE, 12, 0, 0.3, 1, 3); // core*/
   /*fig1.children[0] = FIG(-15, 50, S_LINE, 12, 0, 0.3, 1, 0); // left leg*/
@@ -76,6 +78,7 @@ int main(int argc, char* argv[]) {
 }
 
 gboolean render(GtkWidget *widget, cairo_t *cr, gpointer data) {
+  g_cr = cr;
   cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
 
   GtkStyleContext *context = gtk_widget_get_style_context(widget);
@@ -101,15 +104,16 @@ gboolean da_button_press(GtkWidget *area, GdkEventButton *event, gpointer data) 
     moving_node = figs_check_click(&figs, event->x, event->y);
     is_moving_node = true;
   } else {
+    moving_node = NULL;
+
     is_moving_node = false;
   }
   return TRUE;
 }
 
 gboolean da_motion(GtkWidget *area, GdkEventButton *event, gpointer data) {
-  if (is_moving_node) { // moving node
-    printf("%lf, %lf\n%f, %f\n\n", event->x, event->y, moving_node->x, moving_node->y);
-    move_figure_node(moving_node, event->x, event->y);
+  if (is_moving_node && moving_node != NULL) { // moving node
+    move_figure_node(moving_node, event->x/2, event->y/2);
   } else { // not moving node
   }
   gtk_widget_queue_draw(area);
