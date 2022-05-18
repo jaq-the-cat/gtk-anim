@@ -22,7 +22,6 @@ figure fig_read_from_file(FILE* f){
   figure_nc fig_nc;
 
   int read = fread(&fig_nc, sizeof(figure_nc), 1, f);
-  printf("READ: %d\n",read);
   if (read != sizeof(figure_nc)) {
     perror("Error reading file (corrupted?)");
   }
@@ -70,7 +69,6 @@ figure fig_unseralize(char* filename) {
           child->thickness\
 
 void fig_draw_recursive(figure *fig, cairo_t *cr, guint16 parent_x, guint16 parent_y, bool is_root) {
-  printf("drawing with abs(%d, %d)\n", parent_x, parent_y);
   figure *child;
   for (int i=0; i<fig->children_count; i++) {
     child = &fig->children[i];

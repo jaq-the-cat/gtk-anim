@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <gtk-3.0/gtk/gtk.h>
 
 #include "macros.h"
@@ -6,6 +7,9 @@
 
 WIDGET_S(window, "main_window");
 WIDGET_S(drawing_area, "drawing_area");
+
+static bool is_moving_node = false;
+static figure *moving_node;
 
 int main(int argc, char* argv[]) {
   // Init GTK
@@ -25,6 +29,9 @@ int main(int argc, char* argv[]) {
   // Essential for GTK program
   gtk_builder_connect_signals(builder, NULL);
   g_object_unref(builder);
+
+  // Setup drawing area wevents
+  gtk_widget_add_events(drawing_area, GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK);
 
   // Start program
   gtk_widget_show_all(window);
@@ -63,13 +70,19 @@ gboolean render(GtkWidget *widget, cairo_t *cr, gpointer data) {
   return FALSE;
 }
 
-void da_drag_begin(GtkGestureDrag *gesture, double x, double y, GtkWidget *area) {
-  printf("drag begin\n");
-  gtk_widget_queue_draw(area);
+gboolean da_button_press(GtkWidget *area, GdkEventButton *event, gpointer data) {
+  // check if hovering over red thingey
+  if (true) {
+    is_moving_node ^= true;
+    moving_node = /* node to move */ NULL;
+  }
+  return TRUE;
 }
 
-gboolean da_drag_motion(GtkGestureDrag *gesture, double x, double y, GtkWidget *area) {
-  printf("drag motion\n");
+gboolean da_motion(GtkWidget *area, GdkEventButton *event, gpointer data) {
+  if (is_moving_node) { // moving node
+  } else { // not moving node
+  }
   gtk_widget_queue_draw(area);
   return TRUE;
 }

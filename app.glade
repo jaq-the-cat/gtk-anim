@@ -392,10 +392,9 @@
                 <property name="has-focus">True</property>
                 <property name="is-focus">True</property>
                 <property name="double-buffered">False</property>
-                <signal name="drag-begin" handler="da_drag_begin" swapped="no"/>
-                <signal name="drag-end" handler="da_drag_end" swapped="no"/>
-                <signal name="drag-motion" handler="da_drag_motion" swapped="no"/>
+                <signal name="button-press-event" handler="da_button_press" swapped="no"/>
                 <signal name="draw" handler="render" swapped="no"/>
+                <signal name="motion-notify-event" handler="da_motion" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>

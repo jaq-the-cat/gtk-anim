@@ -20,7 +20,7 @@ figure make_fig() {
 
 int main() {
   figure fig = make_fig();
-  fig_serialize(fig, "figure.gff");
+  fig_serialize(&fig, "figure.gff");
   figure fig_un = fig_unseralize("figure.gff");
   print_fig(fig);
   printf("\n FIG ^^ FIG_UN vv\n");
