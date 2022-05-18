@@ -117,6 +117,10 @@ figure* fig_check_clicked(figure *fig, gdouble x, gdouble y) {
   return fig_check_clicked_recursive(fig, x, y);
 }
 
+// (a, b): center position
+// (c, d): mouse position
+// t = r / sqrt(a^2 - 2ac + b^2 - 2bd + c^2 + d^2)
+
 void move_figure_node(figure *fig, gdouble x, gdouble y) {
   for (int i=0; i<fig->children_count; i++) {
     figure *child = &fig->children[i];
