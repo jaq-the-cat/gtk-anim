@@ -72,9 +72,6 @@ gboolean render(GtkWidget *widget, cairo_t *cr, gpointer data) {
   int height = gtk_widget_get_allocated_height(widget);
 
   GdkRGBA color;
-  /*GdkRGBA color = {*/
-    /*1.0, 1.0, 1.0, 1.0*/
-  /*};*/
   gtk_style_context_get_color(context, gtk_style_context_get_state(context), &color);
 
   gtk_render_background(context, cr, 0, 0, width, height);
@@ -91,7 +88,6 @@ gboolean da_button_press(GtkWidget *area, GdkEventButton *event, gpointer data) 
     is_moving_node = true;
   } else {
     moving_node = NULL;
-
     is_moving_node = false;
   }
   return TRUE;
@@ -110,4 +106,5 @@ gboolean da_motion(GtkWidget *area, GdkEventButton *event, gpointer data) {
 void exit_app() {
   printf("Exiting\n");
   gtk_main_quit();
+  figs_delete_list(&figs);
 }

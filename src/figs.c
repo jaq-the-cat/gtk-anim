@@ -121,8 +121,8 @@ void move_figure_node(figure *fig, gdouble x, gdouble y) {
   for (int i=0; i<fig->children_count; i++) {
     figure *child = &fig->children[i];
     move_figure_node(child,
-        child->x + x - fig->x,
-        child->y + y - fig->y);
+      child->x + x - fig->x,
+      child->y + y - fig->y);
   }
   fig->x = x;
   fig->y = y;

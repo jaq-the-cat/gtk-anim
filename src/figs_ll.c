@@ -44,6 +44,7 @@ bool _figs_remove_from_list(int len, _figures_node *node, figure *data, int curr
 void _figs_delete_node(_figures_node *node) {
   if (node->next != NULL)
     _figs_delete_node(node->next);
+  fig_free(node->data);
   free(node);
 }
 
