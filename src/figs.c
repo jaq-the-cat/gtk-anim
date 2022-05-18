@@ -133,7 +133,6 @@ void fig_free(figure *fig) {
   for (int i=0; i<fig->children_count; i++) {
     child = &fig->children[i];
     fig_free(child);
-    free(fig->children);
   }
 }
 
