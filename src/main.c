@@ -20,9 +20,10 @@ static cairo_t *g_cr;
 
 void init_state() {
   fig1 = FIG(150, 150, S_LINE, 12, 0, 0.3, 1, 3);
-  fig1.children[0] = FIG(150-30, 150+40, S_LINE, 12, 0, 0.3, 1, 0);
-  fig1.children[1] = FIG(150+30, 150+40, S_LINE, 12, 0, 0.3, 1, 0);
-  fig1.children[2] = FIG(150, 150-40, S_LINE, 12, 0, 0.3, 1, 0);
+  fig1.children[0] = FIG(150-30, 150+40, S_LINE, 12, 0, 0.3, 1, 0); // left
+  fig1.children[1] = FIG(150+30, 150+40, S_LINE, 12, 0, 0.3, 1, 0); // right
+  fig1.children[2] = FIG(150, 150-40, S_LINE, 12, 0, 0.3, 1, 1); // top
+  fig1.children[2].children[0] = FIG(150-30, 150-40-20, S_LINE, 12, 0, 0.3, 1, 0); // top left
 
   fig_save_to_memory(&fig1, "fig1.gff");
 
