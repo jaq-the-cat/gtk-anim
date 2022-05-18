@@ -22,9 +22,6 @@ figure fig_read_from_file(FILE* f){
   figure_nc fig_nc;
 
   int read = fread(&fig_nc, sizeof(figure_nc), 1, f);
-  if (read != sizeof(figure_nc)) {
-    perror("Error reading file (corrupted?)");
-  }
   figure fig = (figure) {
     fig_nc.x, fig_nc.y,
     fig_nc.shp,
@@ -41,7 +38,7 @@ figure fig_read_from_file(FILE* f){
   return fig;
 }
 
-void fig_serialize(figure *fig, char* filename) {
+void fig_save_to_memory(figure *fig, char* filename) {
   FILE *f = fopen(filename, "wb");
   if (!f) {
     perror("Error opening file in fig_seralize");
@@ -50,7 +47,7 @@ void fig_serialize(figure *fig, char* filename) {
   fclose(f);
 }
 
-figure fig_unseralize(char* filename) {
+figure fig_load_from_memory(char* filename) {
   FILE *f = fopen(filename, "rb");
   if (!f) {
     perror("Error opening file in fig_unseralize (maybe it doesn't exist?)");
@@ -68,7 +65,7 @@ figure fig_unseralize(char* filename) {
           parent_x+fig->x+child->x, parent_y+fig->y+child->y,\
           child->thickness\
 
-void fig_draw_recursive(figure *fig, cairo_t *cr, guint16 parent_x, guint16 parent_y, bool is_root) {
+void fig_draw_recursive(figure *fig, cairo_t *cr, gdouble parent_x, gdouble parent_y, bool is_root) {
   figure *child;
   for (int i=0; i<fig->children_count; i++) {
     child = &fig->children[i];
@@ -99,6 +96,32 @@ void fig_draw_recursive(figure *fig, cairo_t *cr, guint16 parent_x, guint16 pare
 
 void fig_draw(figure *fig, cairo_t *cr) {
   fig_draw_recursive(fig, cr, fig->x, fig->y, true);
+}
+
+figure* fig_check_clicked_recursive(figure *fig, gdouble x, gdouble y, gdouble parent_x, gdouble parent_y) {
+  // radius = 5
+  if (point_distance(x,  y, fig->x + parent_x, fig->y + parent_y) <= 5) {
+    // collides with this figures coords
+    return fig;
+  } else {
+    figure *returned; // NULL if doesnt collide, figure* otherwise
+    for (int i=0; i<fig->children_count; i++) {
+      returned = fig_check_clicked_recursive(&fig->children[i],
+          x, y,
+          parent_x+fig->x, parent_y+fig->y);
+      if (returned != NULL) return returned;
+    }
+    return NULL;
+  }
+}
+
+figure* fig_check_clicked(figure *fig, gdouble x, gdouble y) {
+  return fig_check_clicked_recursive(fig, x, y, fig->x, fig->y);
+}
+
+void move_figure_node(figure *fig, gdouble x, gdouble y) {
+  /*fig->x = x;*/
+  /*fig->y = y;*/
 }
 
 void fig_free(figure *fig) {

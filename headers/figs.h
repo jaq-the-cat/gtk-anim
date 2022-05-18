@@ -15,23 +15,26 @@
   }
 
 typedef struct figure {
-  guint32 x, y; // endpoint x and y (root is parent node)
+  gdouble x, y; // endpoint x and y (root is parent node)
   guint8 shp : 2; // shape of current node
-  guint16 thickness;
+  gdouble thickness;
   GdkRGBA color; // color, alpha always 1.0 (fully opaque)
   guint16 children_count;
   struct figure* children;
 } figure;
 
 typedef struct figure_nc { // no children
-  guint32 x, y;
+  gdouble x, y;
   guint8 shp : 2;
-  guint16 thickness;
+  gdouble thickness;
   GdkRGBA color;
   guint16 children_count;
 } figure_nc;
 
-void fig_serialize(figure *fig, char* filename);
-figure fig_unseralize(char* filename);
+void fig_save_to_memory(figure *fig, char* filename);
+figure fig_load_from_memory(char* filename);
 void fig_draw(figure *fig, cairo_t *cr);
 void fig_free(figure *fig);
+
+figure* fig_check_clicked(figure *fig, gdouble x, gdouble y);
+void move_figure_node(figure *fig, gdouble x, gdouble y);

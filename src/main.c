@@ -4,12 +4,44 @@
 
 #include "macros.h"
 #include "figs.h"
+#include "figs_ll.h"
 
 WIDGET_S(window, "main_window");
 WIDGET_S(drawing_area, "drawing_area");
 
 static bool is_moving_node = false;
 static figure *moving_node;
+
+static figures figs = FIGS_LL;
+
+static figure fig1, fig2;
+
+void init_state() {
+  /*fig1 = FIG(100, 100, S_LINE, 12, 0, 0.3, 1, 3); // core*/
+  /*fig1.children[0] = FIG(-15, 50, S_LINE, 12, 0, 0.3, 1, 0); // left leg*/
+  /*fig1.children[1] = FIG(15, 50, S_LINE, 12, 0, 0.3, 1, 0); // right leg*/
+  /*fig1.children[2] = FIG(0, -40, S_LINE, 12, 0, 0.3, 1, 3); // torso*/
+  /*fig1.children[2].children[0] = FIG(-15, 30, S_LINE, 12, 0, 0.3, 1, 0); // left arm*/
+  /*fig1.children[2].children[1] = FIG(15, 30, S_LINE, 12, 0, 0.3, 1, 0); // right arm*/
+  /*fig1.children[2].children[2] = FIG(0, -30, S_FILLEDCIRCLE, 12, 0, 0.3, 1, 0); // head*/
+
+  /*fig2 = FIG(200, 200, S_LINE, 12, 0, 0.3, 1, 3); // core*/
+  /*fig2.children[0] = FIG(-15, 50, S_LINE, 12, 0, 0.3, 1, 0); // left leg*/
+  /*fig2.children[1] = FIG(15, 50, S_LINE, 12, 0, 0.3, 1, 0); // right leg*/
+  /*fig2.children[2] = FIG(0, -40, S_LINE, 12, 0, 0.3, 1, 3); // torso*/
+  /*fig2.children[2].children[0] = FIG(-15, 30, S_LINE, 12, 0, 0.3, 1, 0); // left arm*/
+  /*fig2.children[2].children[1] = FIG(15, 30, S_LINE, 12, 0, 0.3, 1, 0); // right arm*/
+  /*fig2.children[2].children[2] = FIG(0, -30, S_FILLEDCIRCLE, 12, 0, 0.3, 1, 0); // head*/
+
+  /*fig_save_to_memory(&fig1, "fig1.gff");*/
+  /*fig_save_to_memory(&fig2, "fig2.gff");*/
+
+  fig1 = fig_load_from_memory("fig1.gff");
+  fig2 = fig_load_from_memory("fig2.gff");
+
+  figs_add(&figs, &fig1);
+  figs_add(&figs, &fig2);
+}
 
 int main(int argc, char* argv[]) {
   // Init GTK
@@ -33,6 +65,9 @@ int main(int argc, char* argv[]) {
   // Setup drawing area wevents
   gtk_widget_add_events(drawing_area, GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK);
 
+  // initialize program state
+  init_state();
+
   // Start program
   gtk_widget_show_all(window);
   gtk_main();
@@ -44,8 +79,8 @@ gboolean render(GtkWidget *widget, cairo_t *cr, gpointer data) {
   cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
 
   GtkStyleContext *context = gtk_widget_get_style_context(widget);
-  guint width = gtk_widget_get_allocated_width(widget);
-  guint height = gtk_widget_get_allocated_height(widget);
+  int width = gtk_widget_get_allocated_width(widget);
+  int height = gtk_widget_get_allocated_height(widget);
 
   GdkRGBA color;
   /*GdkRGBA color = {*/
@@ -55,32 +90,26 @@ gboolean render(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
   gtk_render_background(context, cr, 0, 0, width, height);
 
-  figure fig = FIG(150, 150, S_LINE, 5, 1, 0, 0, 3); // core
-
-  fig.children[0] = FIG(0, -50, S_LINE, 5, 0, 1, 0, 3); //  upper body
-  fig.children[0].children[0] = FIG(-30, 40, S_LINE, 5, 0, 1, 0, 0); // left arm
-  fig.children[0].children[1] = FIG(30, 40, S_LINE, 5, 0, 1, 0, 0); // right arm
-  fig.children[0].children[2] = FIG(0, -100, S_EMPTYCIRCLE, 5, 0, 1, 0, 0); // head
-
-  fig.children[1] = FIG(-20, 50, S_LINE, 5, 0, 1, 0, 0); // left leg
-  fig.children[2] = FIG(20, 50, S_LINE, 5, 0, 1, 0, 0); // right leg
-
-  fig_draw(&fig, cr);
+  figs_draw(&figs, cr);
 
   return FALSE;
 }
 
 gboolean da_button_press(GtkWidget *area, GdkEventButton *event, gpointer data) {
   // check if hovering over red thingey
-  if (true) {
-    is_moving_node ^= true;
-    moving_node = /* node to move */ NULL;
+  if (!is_moving_node) {
+    moving_node = figs_check_click(&figs, event->x, event->y);
+    is_moving_node = true;
+  } else {
+    is_moving_node = false;
   }
   return TRUE;
 }
 
 gboolean da_motion(GtkWidget *area, GdkEventButton *event, gpointer data) {
   if (is_moving_node) { // moving node
+    printf("%lf, %lf\n%f, %f\n\n", event->x, event->y, moving_node->x, moving_node->y);
+    move_figure_node(moving_node, event->x, event->y);
   } else { // not moving node
   }
   gtk_widget_queue_draw(area);

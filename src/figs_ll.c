@@ -95,3 +95,32 @@ void figs_delete_list(figures *list) {
     list->len = 0;
   }
 }
+
+// draw function
+void _figs_draw(_figures_node *node, cairo_t *cr) {
+  fig_draw(node->data, cr);
+  if (node->next != NULL)
+    _figs_draw(node->next, cr);
+}
+
+void figs_draw(figures *list, cairo_t *cr) {
+  _figs_draw(list->head, cr);
+}
+
+// check clicks
+figure* _figs_check_click(_figures_node *node, gdouble x, gdouble y) {
+  figure *returned = fig_check_clicked(node->data, x, y);
+  if (returned != NULL)
+    // if found collided node
+    return returned;
+  if (node->next != NULL)
+    // else, if you can check the others
+    return _figs_check_click(node->next, x, y);
+  else
+    // this was the last node and u cant check any more -> return NULL
+    return NULL;
+}
+
+figure* figs_check_click(figures *list, gdouble x, gdouble y) {
+  return _figs_check_click(list->head, x, y);
+}

@@ -4,7 +4,7 @@ TESTSRC := $(filter-out src/main.c, $(ALLSRC))
 PKGS    := gtk+-3.0
 CC      := clang
 CFLAGS  := -Iheaders
-CFLAGS  += -Wall -O2 -std=c17 -rdynamic $(shell pkg-config --cflags $(PKGS))
+CFLAGS  += -O2 -std=gnu17 -rdynamic -rtlib=libgcc $(shell pkg-config --cflags $(PKGS))
 LDFLAGS := -lm -lGL $(shell pkg-config --libs $(PKGS))
 
 .PHONY: dev clean compile cnr
