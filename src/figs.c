@@ -60,12 +60,12 @@ figure fig_load_from_memory(char* filename) {
 
 // parameters for use in fig_draw_recursive
 #define _params cr,\
-          &child->color,\
-          parent_x+fig->x, parent_y+fig->y,\
-          parent_x+fig->x+child->x, parent_y+fig->y+child->y,\
-          child->thickness\
+  &child->color,\
+  fig->x, fig->y,\
+  child->x, child->y,\
+  child->thickness\
 
-void fig_draw_recursive(figure *fig, cairo_t *cr, gdouble parent_x, gdouble parent_y, bool is_root) {
+void fig_draw_recursive(figure *fig, cairo_t *cr, bool is_root) {
   figure *child;
   for (int i=0; i<fig->children_count; i++) {
     child = &fig->children[i];
@@ -85,30 +85,28 @@ void fig_draw_recursive(figure *fig, cairo_t *cr, gdouble parent_x, gdouble pare
       default:
         break;
     }
-    fig_draw_recursive(child, cr, parent_x+fig->x, parent_y+fig->y, false);
+    fig_draw_recursive(child, cr, false);
   }
   if (is_root) {
-    draw_node(cr, NT_ROOT, parent_x+fig->x, parent_y+fig->y);
+    draw_node(cr, NT_ROOT, fig->x, fig->y);
   } else {
-    draw_node(cr, NT_OTHER, parent_x+fig->x, parent_y+fig->y);
+    draw_node(cr, NT_OTHER, fig->x, fig->y);
   }
 }
 
 void fig_draw(figure *fig, cairo_t *cr) {
-  fig_draw_recursive(fig, cr, fig->x, fig->y, true);
+  fig_draw_recursive(fig, cr, true);
 }
 
-figure* fig_check_clicked_recursive(figure *fig, gdouble x, gdouble y, gdouble parent_x, gdouble parent_y) {
+figure* fig_check_clicked_recursive(figure *fig, gdouble x, gdouble y) {
   // radius = 5
-  if (point_distance(x,  y, fig->x + parent_x, fig->y + parent_y) <= 5) {
+  if (point_distance(x,  y, fig->x, fig->y) <= 5) {
     // collides with this figures coords
     return fig;
   } else {
     figure *returned; // NULL if doesnt collide, figure* otherwise
     for (int i=0; i<fig->children_count; i++) {
-      returned = fig_check_clicked_recursive(&fig->children[i],
-          x, y,
-          parent_x+fig->x, parent_y+fig->y);
+      returned = fig_check_clicked_recursive(&fig->children[i], x, y);
       if (returned != NULL) return returned;
     }
     return NULL;
@@ -116,10 +114,16 @@ figure* fig_check_clicked_recursive(figure *fig, gdouble x, gdouble y, gdouble p
 }
 
 figure* fig_check_clicked(figure *fig, gdouble x, gdouble y) {
-  return fig_check_clicked_recursive(fig, x, y, fig->x, fig->y);
+  return fig_check_clicked_recursive(fig, x, y);
 }
 
 void move_figure_node(figure *fig, gdouble x, gdouble y) {
+  for (int i=0; i<fig->children_count; i++) {
+    figure *child = &fig->children[i];
+    move_figure_node(child,
+        child->x + x - fig->x,
+        child->y + y - fig->y);
+  }
   fig->x = x;
   fig->y = y;
 }

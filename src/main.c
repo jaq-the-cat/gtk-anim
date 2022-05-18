@@ -19,30 +19,16 @@ static figure fig1, fig2;
 static cairo_t *g_cr;
 
 void init_state() {
-  /*fig1 = FIG(100, 100, S_LINE, 12, 0, 0.3, 1, 3); // core*/
-  /*fig1.children[0] = FIG(-15, 50, S_LINE, 12, 0, 0.3, 1, 0); // left leg*/
-  /*fig1.children[1] = FIG(15, 50, S_LINE, 12, 0, 0.3, 1, 0); // right leg*/
-  /*fig1.children[2] = FIG(0, -40, S_LINE, 12, 0, 0.3, 1, 3); // torso*/
-  /*fig1.children[2].children[0] = FIG(-15, 30, S_LINE, 12, 0, 0.3, 1, 0); // left arm*/
-  /*fig1.children[2].children[1] = FIG(15, 30, S_LINE, 12, 0, 0.3, 1, 0); // right arm*/
-  /*fig1.children[2].children[2] = FIG(0, -30, S_FILLEDCIRCLE, 12, 0, 0.3, 1, 0); // head*/
+  fig1 = FIG(150, 150, S_LINE, 12, 0, 0.3, 1, 3);
+  fig1.children[0] = FIG(150-30, 150+40, S_LINE, 12, 0, 0.3, 1, 0);
+  fig1.children[1] = FIG(150+30, 150+40, S_LINE, 12, 0, 0.3, 1, 0);
+  fig1.children[2] = FIG(150, 150-40, S_LINE, 12, 0, 0.3, 1, 0);
 
-  /*fig2 = FIG(200, 200, S_LINE, 12, 0, 0.3, 1, 3); // core*/
-  /*fig2.children[0] = FIG(-15, 50, S_LINE, 12, 0, 0.3, 1, 0); // left leg*/
-  /*fig2.children[1] = FIG(15, 50, S_LINE, 12, 0, 0.3, 1, 0); // right leg*/
-  /*fig2.children[2] = FIG(0, -40, S_LINE, 12, 0, 0.3, 1, 3); // torso*/
-  /*fig2.children[2].children[0] = FIG(-15, 30, S_LINE, 12, 0, 0.3, 1, 0); // left arm*/
-  /*fig2.children[2].children[1] = FIG(15, 30, S_LINE, 12, 0, 0.3, 1, 0); // right arm*/
-  /*fig2.children[2].children[2] = FIG(0, -30, S_FILLEDCIRCLE, 12, 0, 0.3, 1, 0); // head*/
+  fig_save_to_memory(&fig1, "fig1.gff");
 
-  /*fig_save_to_memory(&fig1, "fig1.gff");*/
-  /*fig_save_to_memory(&fig2, "fig2.gff");*/
-
-  fig1 = fig_load_from_memory("fig1.gff");
-  fig2 = fig_load_from_memory("fig2.gff");
+  /*fig1 = fig_load_from_memory("fig1.gff");*/
 
   figs_add(&figs, &fig1);
-  figs_add(&figs, &fig2);
 }
 
 int main(int argc, char* argv[]) {
@@ -113,16 +99,11 @@ gboolean da_button_press(GtkWidget *area, GdkEventButton *event, gpointer data) 
 
 gboolean da_motion(GtkWidget *area, GdkEventButton *event, gpointer data) {
   if (is_moving_node && moving_node != NULL) { // moving node
-    move_figure_node(moving_node, event->x/2, event->y/2);
+    move_figure_node(moving_node, event->x, event->y);
   } else { // not moving node
   }
   gtk_widget_queue_draw(area);
   return TRUE;
-}
-
-void da_drag_end(GtkGestureDrag *gesture, double x, double y, GtkWidget *area) {
-  printf("drag end\n");
-  gtk_widget_queue_draw(area);
 }
 
 // Glade
