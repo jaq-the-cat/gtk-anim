@@ -137,19 +137,20 @@ void move_figure_node_children(figure *fig, point centerp, point oldpp, point ne
 }
 
 void move_figure_node_static(figure *fig, point p) {
+  for (int i=0; i<fig->children_count; i++) {
+    figure *child = &fig->children[i];
+    move_figure_node_static(child,
+        P(p.x + (child->coor.x - fig->coor.x),
+          p.y + (child->coor.y - fig->coor.y)));
+  }
+  fig->coor.x = p.x;
+  fig->coor.y = p.y;
 }
 
 void move_figure_node(figure *fig, point p) {
   if (fig->parent == NULL) {
     // if its a root node, move the whole thing
-    for (int i=0; i<fig->children_count; i++) {
-      figure *child = &fig->children[i];
-      move_figure_node_static(child,
-          P(p.x + (child->coor.x - fig->coor.x),
-            p.y + (child->coor.y - fig->coor.y)));
-    }
-    fig->coor.x = p.x;
-    fig->coor.y = p.y;
+    move_figure_node_static(fig, p);
   } else {
     point old_figcoor = P(fig->coor.x, fig->coor.y);
     // if its not a root node
