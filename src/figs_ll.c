@@ -109,19 +109,19 @@ void figs_draw(figures *list, cairo_t *cr) {
 }
 
 // check clicks
-figure* _figs_check_click(_figures_node *node, gdouble x, gdouble y) {
-  figure *returned = fig_check_clicked(node->data, x, y);
+figure* _figs_check_click(_figures_node *node, point p) {
+  figure *returned = fig_check_clicked(node->data, p);
   if (returned != NULL)
     // if found collided node
     return returned;
   if (node->next != NULL)
     // else, if you can check the others
-    return _figs_check_click(node->next, x, y);
+    return _figs_check_click(node->next, p);
   else
     // this was the last node and u cant check any more -> return NULL
     return NULL;
 }
 
-figure* figs_check_click(figures *list, gdouble x, gdouble y) {
-  return _figs_check_click(list->head, x, y);
+figure* figs_check_click(figures *list, point p) {
+  return _figs_check_click(list->head, p);
 }

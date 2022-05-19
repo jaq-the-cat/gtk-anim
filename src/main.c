@@ -19,11 +19,11 @@ static figure fig1, fig2;
 static cairo_t *g_cr;
 
 void init_state() {
-  fig1 = FIG(150, 150, S_LINE, 12, 0, 0.3, 1, 3);
-  fig1.children[0] = FIG(150-30, 150+40, S_LINE, 12, 0, 0.3, 1, 0); // left
-  fig1.children[1] = FIG(150+30, 150+40, S_LINE, 12, 0, 0.3, 1, 0); // right
-  fig1.children[2] = FIG(150, 150-40, S_LINE, 12, 0, 0.3, 1, 1); // top
-  fig1.children[2].children[0] = FIG(150-30, 150-40-20, S_LINE, 12, 0, 0.3, 1, 0); // top left
+  fig1 = FIG(NULL, P(150, 150), S_LINE, 12, 0, 0.3, 1, 3);
+  fig1.children[0] = FIG(&fig1, P(150-30, 150+40), S_LINE, 12, 0, 0.3, 1, 0); // left
+  fig1.children[1] = FIG(&fig1, P(150+30, 150+40), S_LINE, 12, 0, 0.3, 1, 0); // right
+  fig1.children[2] = FIG(&fig1, P(150, 150-40), S_LINE, 12, 0, 0.3, 1, 1); // top
+  fig1.children[2].children[0] = FIG(&fig1.children[2], P(150-30, 150-40-20), S_LINE, 12, 0, 0.3, 1, 0); // top left
 
   fig_save_to_memory(&fig1, "fig1.gff");
 
@@ -85,7 +85,7 @@ gboolean render(GtkWidget *widget, cairo_t *cr, gpointer data) {
 gboolean da_button_press(GtkWidget *area, GdkEventButton *event, gpointer data) {
   // check if hovering over red thingey
   if (!is_moving_node) {
-    moving_node = figs_check_click(&figs, event->x, event->y);
+    moving_node = figs_check_click(&figs, P(event->x, event->y));
     is_moving_node = true;
   } else {
     moving_node = NULL;
@@ -96,7 +96,7 @@ gboolean da_button_press(GtkWidget *area, GdkEventButton *event, gpointer data) 
 
 gboolean da_motion(GtkWidget *area, GdkEventButton *event, gpointer data) {
   if (is_moving_node && moving_node != NULL) { // moving node
-    move_figure_node(moving_node, event->x, event->y);
+    move_figure_node(moving_node, P(event->x, event->y));
   } else { // not moving node
   }
   gtk_widget_queue_draw(area);

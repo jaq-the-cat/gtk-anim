@@ -33,4 +33,4 @@ void figs_delete_list(figures *list);
 void figs_draw(figures *list, cairo_t *cr);
 
 // click check func
-figure* figs_check_click(figures *list, gdouble x, gdouble y);
+figure* figs_check_click(figures *list, point p);

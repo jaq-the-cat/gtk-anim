@@ -1,11 +1,12 @@
 #include "figs.h"
 #include "draw.h"
+#include "math.h"
 #include <stdbool.h>
 
 void fig_write_to_file(figure *fig, FILE* f) {
   // remove children so it doesnt write junk
   figure_nc no_child = (figure_nc) {
-    fig->x, fig->y,
+    fig->coor.x, fig->coor.y,
     fig->shp,
     fig->thickness,
     fig->color,
@@ -23,7 +24,8 @@ figure fig_read_from_file(FILE* f){
 
   int read = fread(&fig_nc, sizeof(figure_nc), 1, f);
   figure fig = (figure) {
-    fig_nc.x, fig_nc.y,
+    NULL,
+    fig_nc.coor.x, fig_nc.coor.y,
     fig_nc.shp,
     fig_nc.thickness,
     fig_nc.color,
@@ -33,6 +35,7 @@ figure fig_read_from_file(FILE* f){
 
   for (int i=0; i<fig.children_count; i++) {
     fig.children[i] = fig_read_from_file(f);
+    fig.children[i].parent = &fig;
   }
 
   return fig;
@@ -61,8 +64,8 @@ figure fig_load_from_memory(char* filename) {
 // parameters for use in fig_draw_recursive
 #define _params cr,\
   &child->color,\
-  fig->x, fig->y,\
-  child->x, child->y,\
+  fig->coor,\
+  child->coor,\
   child->thickness\
 
 void fig_draw_recursive(figure *fig, cairo_t *cr, bool is_root) {
@@ -88,9 +91,9 @@ void fig_draw_recursive(figure *fig, cairo_t *cr, bool is_root) {
     fig_draw_recursive(child, cr, false);
   }
   if (is_root) {
-    draw_node(cr, NT_ROOT, fig->x, fig->y);
+    draw_node(cr, NT_ROOT, fig->coor);
   } else {
-    draw_node(cr, NT_OTHER, fig->x, fig->y);
+    draw_node(cr, NT_OTHER, fig->coor);
   }
 }
 
@@ -98,38 +101,66 @@ void fig_draw(figure *fig, cairo_t *cr) {
   fig_draw_recursive(fig, cr, true);
 }
 
-figure* fig_check_clicked_recursive(figure *fig, gdouble x, gdouble y) {
+figure* fig_check_clicked_recursive(figure *fig, point p) {
   // radius = 5
-  if (point_distance(x,  y, fig->x, fig->y) <= 5) {
+  if (point_distance(p, fig->coor) <= 5) {
     // collides with this figures coords
     return fig;
   } else {
     figure *returned; // NULL if doesnt collide, figure* otherwise
     for (int i=0; i<fig->children_count; i++) {
-      returned = fig_check_clicked_recursive(&fig->children[i], x, y);
+      returned = fig_check_clicked_recursive(&fig->children[i], p);
       if (returned != NULL) return returned;
     }
     return NULL;
   }
 }
 
-figure* fig_check_clicked(figure *fig, gdouble x, gdouble y) {
-  return fig_check_clicked_recursive(fig, x, y);
+figure* fig_check_clicked(figure *fig, point p) {
+  return fig_check_clicked_recursive(fig, p);
 }
 
 // (a, b): center position
 // (c, d): mouse position
+// L(t) = ((1-t)a+tc, (1-t)b+td)
 // t = r / sqrt(a^2 - 2ac + b^2 - 2bd + c^2 + d^2)
 
-void move_figure_node(figure *fig, gdouble x, gdouble y) {
-  for (int i=0; i<fig->children_count; i++) {
-    figure *child = &fig->children[i];
-    move_figure_node(child,
-      child->x + x - fig->x,
-      child->y + y - fig->y);
+void limit_length(point centerp, point p, gdouble len, point *np) {
+  // Limit length of line so it matches the given length and stays in the same angle
+  double a = centerp.x, b = centerp.y, c = p.x, d = p.y;
+  gdouble t = len / sqrt(a*a - 2*a*c + b*b - 2*b*d + c*c + d*d);
+  np->x = (1-t)*a + t*c;
+  np->y = (1-t)*b + t*d;
+}
+
+void move_figure_node_children(figure *fig, point centerp, point oldpp, point newpp) {
+}
+
+void move_figure_node_static(figure *fig, point p) {
+}
+
+void move_figure_node(figure *fig, point p) {
+  if (fig->parent == NULL) {
+    // if its a root node, move the whole thing
+    for (int i=0; i<fig->children_count; i++) {
+      figure *child = &fig->children[i];
+      move_figure_node_static(child,
+          P(p.x + (child->coor.x - fig->coor.x),
+            p.y + (child->coor.y - fig->coor.y)));
+    }
+    fig->coor.x = p.x;
+    fig->coor.y = p.y;
+  } else {
+    point old_figcoor = P(fig->coor.x, fig->coor.y);
+    // if its not a root node
+    gdouble length = point_distance(fig->parent->coor, fig->coor);
+    limit_length(fig->parent->coor, p, length, &fig->coor);
+    // fig->x and fig->y now on proper position
+    for (int i=0; i<fig->children_count; i++) {
+      figure *child = &fig->children[i];
+      move_figure_node_children(child, fig->parent->coor, old_figcoor, fig->coor);
+    }
   }
-  fig->x = x;
-  fig->y = y;
 }
 
 void fig_free(figure *fig) {
