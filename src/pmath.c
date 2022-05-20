@@ -34,3 +34,10 @@ void rotate_around(point *p, point center, double angle) {
   p->y = yr + center.y;
 
 }
+
+double angle_between(point _from, point _from_origin, point _to, point _to_origin) {
+  point from = P(_from.x - _from_origin.x, _from.y - _from_origin.y);
+  point to = P(_to.x - _to_origin.x, _to.y - _to_origin.y);
+  // angle in radians, points relative to (0, 0)
+  return acos(dot(from, to) / (mag(from)*mag(to)));
+}

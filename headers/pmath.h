@@ -13,3 +13,4 @@ void limit_length(point centerp, point p, gdouble len, point *np);
 double dot(point a, point b);
 double mag(point p);
 void rotate_around(point *p, point center, double angle);
+double angle_between(point _from, point _from_origin, point _to, point _to_origin);

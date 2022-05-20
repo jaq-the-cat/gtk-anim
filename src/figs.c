@@ -116,13 +116,6 @@ figure* fig_check_clicked_recursive(figure *fig, point p) {
   }
 }
 
-double angle_between(point _from, point _from_origin, point _to, point _to_origin) {
-  point from = P(_from.x - _from_origin.x, _from.y - _from_origin.y);
-  point to = P(_to.x - _to_origin.x, _to.y - _to_origin.y);
-  // angle in radians, points relative to (0, 0)
-  return acos(dot(from, to) / (mag(from)*mag(to)));
-}
-
 figure* fig_check_clicked(figure *fig, point p) {
   return fig_check_clicked_recursive(fig, p);
 }
@@ -177,8 +170,8 @@ void move_figure_node(figure *fig, point p) {
     // if its a root node, move the whole thing
     move_figure_node_static(fig, p);
   } else {
-    point old_figcoor = P(fig->coor.x, fig->coor.y);
     // if its not a root node
+    point old_figcoor = P(fig->coor.x, fig->coor.y);
     gdouble length = point_distance(fig->parent->coor, fig->coor);
     limit_length(fig->parent->coor, p, length, &fig->coor);
     // fig->x and fig->y now on proper position
