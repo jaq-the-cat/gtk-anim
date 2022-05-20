@@ -18,12 +18,19 @@ static figure fig1, fig2;
 
 static cairo_t *g_cr;
 
+#define R(dtx, dty) P(coor.x+dtx, coor.y+dty)
+
 void init_state() {
-  fig1 = FIG(NULL, P(150, 150), S_LINE, 12, 0, 0.3, 1, 3);
-  fig1.children[0] = FIG(&fig1, P(150-30, 150+40), S_LINE, 12, 0, 0.3, 1, 0); // left
-  fig1.children[1] = FIG(&fig1, P(150+30, 150+40), S_LINE, 12, 0, 0.3, 1, 0); // right
-  fig1.children[2] = FIG(&fig1, P(150, 150-40), S_LINE, 12, 0, 0.3, 1, 1); // top
-  fig1.children[2].children[0] = FIG(&fig1.children[2], P(150-30, 150-40-20), S_LINE, 12, 0, 0.3, 1, 0); // top left
+  point coor = P(200, 200);
+  fig1 = FIG(NULL, R(0, 0), S_LINE, 12, 0, 0.3, 1, 3);
+
+  fig1.children[0] = FIG(&fig1, R(-30, 60), S_LINE, 12, 0, 0.3, 1, 0); // left leg
+  fig1.children[1] = FIG(&fig1, R(30, 60), S_LINE, 12, 0, 0.3, 1, 0); // right leg
+  fig1.children[2] = FIG(&fig1, R(0, -60), S_LINE, 12, 0, 0.3, 1, 3); // body
+
+  fig1.children[2].children[0] = FIG(&fig1.children[2], R(0, -60-40), S_FILLEDCIRCLE, 12, 0, 0.3, 1, 0); // top left
+  fig1.children[2].children[1] = FIG(&fig1.children[2], R(-30, -60+50), S_LINE, 12, 0, 0.3, 1, 0); // left arm
+  fig1.children[2].children[2] = FIG(&fig1.children[2], R(30, -60+50), S_LINE, 12, 0, 0.3, 1, 0); // right arm
 
   fig_save_to_memory(&fig1, "fig1.gff");
 
