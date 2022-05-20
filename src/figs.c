@@ -3,8 +3,6 @@
 #include <math.h>
 #include <stdbool.h>
 
-#define SQR(a) ((a)*(a))
-
 void fig_write_to_file(figure *fig, FILE* f) {
   // remove children so it doesnt write junk
   figure_nc no_child = (figure_nc) {
@@ -122,38 +120,24 @@ figure* fig_check_clicked(figure *fig, point p) {
   return fig_check_clicked_recursive(fig, p);
 }
 
-// (a, b): center position
-// (c, d): mouse position
-// L(t) = ((1-t)a+tc, (1-t)b+td)
-// t = r / sqrt(a^2 - 2ac + b^2 - 2bd + c^2 + d^2)
-
-void limit_length(point centerp, point p, gdouble len, point *np) {
-  // Limit length of line so it matches the given length and stays in the same angle
-  double a = centerp.x, b = centerp.y, c = p.x, d = p.y;
-  gdouble t = len / sqrt(a*a - 2*a*c + b*b - 2*b*d + c*c + d*d);
-  np->x = (1-t)*a + t*c;
-  np->y = (1-t)*b + t*d;
-}
-
-double dot(point a, point b) {
-  return a.x * b.x + a.y * b.y;
-}
-
-double mag(point p) {
-  return sqrt(SQR(p.x) + SQR(p.y));
-}
-
 void move_figure_node_children(figure *fig, point centerp, point oldpp, point newpp) {
   for (int i=0; i<fig->children_count; i++) {
     figure *child = &fig->children[i];
     move_figure_node_children(child, centerp, oldpp, newpp);
   }
+  gdouble length = point_distance(fig->coor, oldpp); // length of original thing 
   // make them relative to the origin
   point old = P(oldpp.x - centerp.x, oldpp.y - centerp.y);
   point new = P(newpp.x - centerp.x, newpp.y - centerp.y);
   // angle in radians
-  double angle = acos(dot(old, new) / (mag(old) * mag(new)));
+  gdouble angle = acos(dot(old, new) / (mag(old) * mag(new)));
+  rotate_around(&fig->coor, newpp, angle);
 
+  fig->coor.x += newpp.x - oldpp.x;
+  fig->coor.y += newpp.y - oldpp.y;
+
+  // limit length so to counter floating point errors
+  limit_length(newpp, fig->coor, length, &fig->coor);
 }
 
 void move_figure_node_static(figure *fig, point p) {

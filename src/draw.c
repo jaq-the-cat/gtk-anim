@@ -19,8 +19,6 @@ void draw_line(_draw_arglist) {
   cairo_stroke(cr);
 }
 
-#define SQR(_n) ((_n)*(_n))
-
 gdouble point_distance(point p0, point p1) {
   return sqrt(SQR(p1.x-p0.x) + SQR(p1.y-p0.y));
 }

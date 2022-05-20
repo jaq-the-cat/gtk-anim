@@ -1,7 +1,6 @@
 #pragma once
 #include <gtk-3.0/gtk/gtk.h>
-
-#define P(x, y) (point) {x, y}
+#include "pmath.h"
 
 #define S_EMPTYCIRCLE 0
 #define S_FILLEDCIRCLE 1
@@ -16,10 +15,6 @@
     children_count,\
     malloc(sizeof(figure)*children_count)\
   }
-
-typedef struct {
-  gdouble x, y;
-} point;
 
 typedef struct figure {
   struct figure* parent;

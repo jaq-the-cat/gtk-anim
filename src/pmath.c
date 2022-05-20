@@ -1,0 +1,36 @@
+#include "pmath.h"
+
+// (a, b): center position
+// (c, d): mouse position
+// L(t) = ((1-t)a+tc, (1-t)b+td)
+// t = r / sqrt(a^2 - 2ac + b^2 - 2bd + c^2 + d^2)
+void limit_length(point centerp, point p, gdouble len, point *np) {
+  // Limit length of line so it matches the given length and stays in the same angle
+  double a = centerp.x, b = centerp.y, c = p.x, d = p.y;
+  gdouble t = len / sqrt(a*a - 2*a*c + b*b - 2*b*d + c*c + d*d);
+  np->x = (1-t)*a + t*c;
+  np->y = (1-t)*b + t*d;
+}
+
+double dot(point a, point b) {
+  return a.x * b.x + a.y * b.y;
+}
+
+double mag(point p) {
+  return sqrt(SQR(p.x) + SQR(p.y));
+}
+
+void rotate_around(point *p, point center, double angle) {
+  // make points relative to origin
+  double x = p->x - center.x;
+  double y = p->y - center.y;
+
+  // rotate
+  double xr = x * cos(angle) - y * sin(angle);
+  double yr = x * sin(angle) + y * cos(angle);
+
+  // make relative to center again
+  p->x = xr + center.x;
+  p->y = yr + center.y;
+
+}

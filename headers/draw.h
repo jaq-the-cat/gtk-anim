@@ -1,6 +1,7 @@
 #pragma once
 #include <gtk-3.0/gtk/gtk.h>
 #include "figs.h"
+#include "pmath.h"
 
 #define NT_ROOT 0
 #define NT_OTHER 1
