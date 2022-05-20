@@ -116,6 +116,13 @@ figure* fig_check_clicked_recursive(figure *fig, point p) {
   }
 }
 
+double angle_between(point from, point from_origin, point to, point to_origin) {
+  point parent = P(from.x - from_origin.x, from.y - from_origin.y);
+  point crrent = P(to.x - to_origin.x, to.y - to_origin.y);
+  // angle in radians, points relative to (0, 0)
+  return acos(dot(from, to) / (mag(from)*mag(to)));
+}
+
 figure* fig_check_clicked(figure *fig, point p) {
   return fig_check_clicked_recursive(fig, p);
 }
@@ -125,19 +132,33 @@ void move_figure_node_children(figure *fig, point centerp, point oldpp, point ne
     figure *child = &fig->children[i];
     move_figure_node_children(child, centerp, oldpp, newpp);
   }
-  gdouble length = point_distance(fig->coor, oldpp); // length of original thing 
-  // make them relative to the origin
-  point old = P(oldpp.x - centerp.x, oldpp.y - centerp.y);
-  point new = P(newpp.x - centerp.x, newpp.y - centerp.y);
-  // angle in radians
-  gdouble angle = acos(dot(old, new) / (mag(old) * mag(new)));
-  rotate_around(&fig->coor, newpp, angle);
 
+  /*
+   * Save data for floating-point errors later
+   */
+  /*gdouble correct_length = point_distance(fig->coor, oldpp); */
+  // angle of node relative to parent
+  /*gdouble correct_angle = angle_between(oldpp, centerp, fig->coor, oldpp);*/
+
+  /*
+   * Rotate node with parent
+   */
+  // rotate around relative to old parent position
+  gdouble angle = angle_between(oldpp, centerp, newpp, centerp);
+  rotate_around(&fig->coor, newpp, angle);
+  // shift so they match the new parent position
   fig->coor.x += newpp.x - oldpp.x;
   fig->coor.y += newpp.y - oldpp.y;
 
-  // limit length so to counter floating point errors
-  limit_length(newpp, fig->coor, length, &fig->coor);
+  /*
+   * Fix floating-point errors
+   */
+  /*limit_length(newpp, fig->coor, correct_length, &fig->coor);*/
+
+  // new angle of node relative to parent
+  /*gdouble new_angle = angle_between(newpp, centerp, fig->coor, newpp);*/
+  /*gdouble angle_error = new_angle - correct_angle;*/
+  /*rotate_around(&fig->coor, newpp, angle_error);*/
 }
 
 void move_figure_node_static(figure *fig, point p) {
