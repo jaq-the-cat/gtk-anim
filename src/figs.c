@@ -116,9 +116,9 @@ figure* fig_check_clicked_recursive(figure *fig, point p) {
   }
 }
 
-double angle_between(point from, point from_origin, point to, point to_origin) {
-  point parent = P(from.x - from_origin.x, from.y - from_origin.y);
-  point crrent = P(to.x - to_origin.x, to.y - to_origin.y);
+double angle_between(point _from, point _from_origin, point _to, point _to_origin) {
+  point from = P(_from.x - _from_origin.x, _from.y - _from_origin.y);
+  point to = P(_to.x - _to_origin.x, _to.y - _to_origin.y);
   // angle in radians, points relative to (0, 0)
   return acos(dot(from, to) / (mag(from)*mag(to)));
 }
@@ -136,9 +136,9 @@ void move_figure_node_children(figure *fig, point centerp, point oldpp, point ne
   /*
    * Save data for floating-point errors later
    */
-  /*gdouble correct_length = point_distance(fig->coor, oldpp); */
+  gdouble correct_length = point_distance(fig->coor, oldpp); 
   // angle of node relative to parent
-  /*gdouble correct_angle = angle_between(oldpp, centerp, fig->coor, oldpp);*/
+  gdouble correct_angle = angle_between(oldpp, centerp, fig->coor, oldpp);
 
   /*
    * Rotate node with parent
@@ -153,12 +153,12 @@ void move_figure_node_children(figure *fig, point centerp, point oldpp, point ne
   /*
    * Fix floating-point errors
    */
-  /*limit_length(newpp, fig->coor, correct_length, &fig->coor);*/
+  limit_length(newpp, fig->coor, correct_length, &fig->coor);
 
   // new angle of node relative to parent
-  /*gdouble new_angle = angle_between(newpp, centerp, fig->coor, newpp);*/
-  /*gdouble angle_error = new_angle - correct_angle;*/
-  /*rotate_around(&fig->coor, newpp, angle_error);*/
+  gdouble new_angle = angle_between(newpp, centerp, fig->coor, newpp);
+  gdouble angle_error = new_angle - correct_angle;
+  rotate_around(&fig->coor, newpp, angle_error);
 }
 
 void move_figure_node_static(figure *fig, point p) {
