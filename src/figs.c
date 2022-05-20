@@ -121,6 +121,10 @@ figure* fig_check_clicked(figure *fig, point p) {
 }
 
 void move_figure_node_children(figure *fig, point centerp, point oldpp, point newpp) {
+  if (oldpp.x == newpp.x && oldpp.y == newpp.y)
+    // if the points are equal
+    return;
+
   for (int i=0; i<fig->children_count; i++) {
     figure *child = &fig->children[i];
     move_figure_node_children(child, centerp, oldpp, newpp);
@@ -151,7 +155,8 @@ void move_figure_node_children(figure *fig, point centerp, point oldpp, point ne
   // new angle of node relative to parent
   gdouble new_angle = angle_between(newpp, centerp, fig->coor, newpp);
   gdouble angle_error = new_angle - correct_angle;
-  rotate_around(&fig->coor, newpp, angle_error);
+  if (angle_error != 0)
+    rotate_around(&fig->coor, newpp, angle_error);
 }
 
 void move_figure_node_static(figure *fig, point p) {

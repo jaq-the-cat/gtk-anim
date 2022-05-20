@@ -4,10 +4,10 @@
 // (c, d): mouse position
 // L(t) = ((1-t)a+tc, (1-t)b+td)
 // t = r / sqrt(a^2 - 2ac + b^2 - 2bd + c^2 + d^2)
-void limit_length(point centerp, point p, gdouble len, point *np) {
+void limit_length(point centerp, point p, double len, point *np) {
   // Limit length of line so it matches the given length and stays in the same angle
   double a = centerp.x, b = centerp.y, c = p.x, d = p.y;
-  gdouble t = len / sqrt(a*a - 2*a*c + b*b - 2*b*d + c*c + d*d);
+  double t = len / sqrt(a*a - 2*a*c + b*b - 2*b*d + c*c + d*d);
   np->x = (1-t)*a + t*c;
   np->y = (1-t)*b + t*d;
 }
