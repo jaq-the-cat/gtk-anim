@@ -1,7 +1,9 @@
 #include "figs.h"
 #include "draw.h"
-#include "math.h"
+#include <math.h>
 #include <stdbool.h>
+
+#define SQR(a) ((a)*(a))
 
 void fig_write_to_file(figure *fig, FILE* f) {
   // remove children so it doesnt write junk
@@ -133,7 +135,25 @@ void limit_length(point centerp, point p, gdouble len, point *np) {
   np->y = (1-t)*b + t*d;
 }
 
+double dot(point a, point b) {
+  return a.x * b.x + a.y * b.y;
+}
+
+double mag(point p) {
+  return sqrt(SQR(p.x) + SQR(p.y));
+}
+
 void move_figure_node_children(figure *fig, point centerp, point oldpp, point newpp) {
+  for (int i=0; i<fig->children_count; i++) {
+    figure *child = &fig->children[i];
+    move_figure_node_children(child, centerp, oldpp, newpp);
+  }
+  // make them relative to the origin
+  point old = P(oldpp.x - centerp.x, oldpp.y - centerp.y);
+  point new = P(newpp.x - centerp.x, newpp.y - centerp.y);
+  // angle in radians
+  double angle = acos(dot(old, new) / (mag(old) * mag(new)));
+
 }
 
 void move_figure_node_static(figure *fig, point p) {
