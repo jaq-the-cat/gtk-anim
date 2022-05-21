@@ -16,6 +16,10 @@ double dot(point a, point b) {
   return a.x * b.x + a.y * b.y;
 }
 
+double cross(point a, point b) {
+  return a.x * b.y - a.y * b.x;
+}
+
 double mag(point p) {
   return sqrt(SQR(p.x) + SQR(p.y));
 }
@@ -35,21 +39,12 @@ void rotate_around(point *p, point center, double angle) {
 
 }
 
-quadrant get_quadrant(point p) {
-  if (p.x >= 0 && p.y >= 0) // == in the very rare case a double ends up being exactly 0
-    return TOP_RIGHT;
-  else if (p.x > 0 && p.y < 0)
-    return BOTTOM_RIGHT;
-  else if (p.x < 0 && p.y < 0)
-    return BOTTOM_LEFT;
-  else
-    return TOP_LEFT;
-}
-
 double angle_between(point _from, point _from_origin, point _to, point _to_origin) {
   point from = P(_from.x - _from_origin.x, _from.y - _from_origin.y);
   point to = P(_to.x - _to_origin.x, _to.y - _to_origin.y);
   // angle in radians, points relative to (0, 0)
   double angle = acos(dot(from, to) / (mag(from)*mag(to)));
+  if (cross(from, to) < 0)
+    return -angle;
   return angle;
 }
