@@ -68,7 +68,7 @@ figure fig_load_from_memory(char* filename) {
   child->coor,\
   child->thickness\
 
-void fig_draw_recursive(figure *fig, cairo_t *cr, bool is_root) {
+void fig_draw_recursive(figure *fig, cairo_t *cr) {
   figure *child;
   for (int i=0; i<fig->children_count; i++) {
     child = &fig->children[i];
@@ -88,8 +88,13 @@ void fig_draw_recursive(figure *fig, cairo_t *cr, bool is_root) {
       default:
         break;
     }
-    fig_draw_recursive(child, cr, false);
+    fig_draw_recursive(child, cr);
   }
+}
+
+void fig_draw_recursive_nodes(figure *fig, cairo_t *cr, bool is_root) {
+  for (int i=0; i<fig->children_count; i++)
+    fig_draw_recursive_nodes(&fig->children[i], cr, false);
   if (is_root) {
     draw_node(cr, NT_ROOT, fig->coor);
   } else {
@@ -98,7 +103,8 @@ void fig_draw_recursive(figure *fig, cairo_t *cr, bool is_root) {
 }
 
 void fig_draw(figure *fig, cairo_t *cr) {
-  fig_draw_recursive(fig, cr, true);
+  fig_draw_recursive(fig, cr);
+  fig_draw_recursive_nodes(fig, cr, fig->parent == NULL);
 }
 
 figure* fig_check_clicked_recursive(figure *fig, point p) {
@@ -124,11 +130,6 @@ void move_figure_node_children(figure *fig, point centerp, point oldpp, point ne
   if (oldpp.x == newpp.x && oldpp.y == newpp.y)
     // if the points are equal
     return;
-
-  for (int i=0; i<fig->children_count; i++) {
-    figure *child = &fig->children[i];
-    move_figure_node_children(child, centerp, oldpp, newpp);
-  }
 
   /*
    * Save data for floating-point errors later
@@ -158,6 +159,11 @@ void move_figure_node_children(figure *fig, point centerp, point oldpp, point ne
   printf("angle error: %lf\n", angle_error);
   if (angle_error != 0)
     rotate_around(&fig->coor, newpp, -angle_error);
+
+  for (int i=0; i<fig->children_count; i++) {
+    figure *child = &fig->children[i];
+    move_figure_node_children(child, centerp, oldpp, newpp);
+  }
 }
 
 void move_figure_node_static(figure *fig, point p) {
