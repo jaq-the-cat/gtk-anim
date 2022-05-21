@@ -5,6 +5,13 @@
 #define P(x, y) (point) {x, y}
 #define SQR(a) ((a)*(a))
 
+typedef enum {
+  TOP_RIGHT,
+  BOTTOM_RIGHT,
+  BOTTOM_LEFT,
+  TOP_LEFT,
+} quadrant;
+
 typedef struct {
   gdouble x, y;
 } point;
