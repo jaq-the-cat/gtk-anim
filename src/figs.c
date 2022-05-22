@@ -173,8 +173,6 @@ void move_figure_node_children(figure *fig, point old_parent_point, point old_pa
       old_parent_point, old_parent_parent_point,
       fig->coor, old_parent_point);
 
-  printf("          angle: %lf°\n", correct_angle * 180 / G_PI);
-
   /*
    * Fix floating-point errors
    */
@@ -182,18 +180,13 @@ void move_figure_node_children(figure *fig, point old_parent_point, point old_pa
 
   // New angle of node relative to parent
   gdouble new_angle = angle_between(fig->parent->coor, fig->parent->parent->coor, fig->coor, fig->parent->coor);
-  printf("      new angle: %lf°\n", new_angle * 180 / G_PI);
 
   // Get angle error and fix
   gdouble angle_error = correct_angle - new_angle;
-  printf("    angle error: %lf°\n", angle_error * 180 / G_PI);
   if (angle_error != 0)
     rotate_around(&fig->coor, fig->parent->coor, angle_error);
 
   gdouble angle_after_fix = angle_between(fig->parent->coor, fig->parent->parent->coor, fig->coor, fig->parent->coor);
-  printf("angle after fix: %lf°\n", angle_after_fix * 180 / G_PI);
-
-  printf("\n");
 
   for (int i=0; i<fig->children_count; i++) {
     figure *child = &fig->children[i];
