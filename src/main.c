@@ -8,6 +8,8 @@
 #include "figs.h"
 #include "figs_ll.h"
 
+#define FRAME_MARGIN 40
+
 #elif defined(_WIN32) || defined(WIN32)
 // OS is Windows-based
 
@@ -30,8 +32,6 @@ static figures figs = FIGS_LL;
 
 static figure fig1, fig2;
 
-static cairo_t *g_cr;
-
 void init_state() {
   fig1 = FIG(NULL, P(200, 200), S_LINE, 12, 0, 0.3, 1, 0);
 
@@ -39,11 +39,11 @@ void init_state() {
   fig_add_child(&fig1, P(30, 60), S_LINE, 12, 0, 0.3, 1); // right leg
   fig_add_child(&fig1, P(0, -60), S_LINE, 12, 0, 0.3, 1); // torso
 
-  fig_add_child(&fig1.children[2], P(0, -40), S_FILLEDCIRCLE, 12, 0, 0.3, 1); // head
-  fig_add_child(&fig1.children[2], P(-30, 50), S_LINE, 12, 0, 0.3, 1); // left arm
+  /*fig_add_child(&fig1.children[2], P(0, -40), S_FILLEDCIRCLE, 12, 0, 0.3, 1); // head*/
+  /*fig_add_child(&fig1.children[2], P(-30, 50), S_LINE, 12, 0, 0.3, 1); // left arm*/
   fig_add_child(&fig1.children[2], P(30, 50), S_LINE, 12, 0, 0.3, 1); // right arm
 
-  fig_add_child(&fig1.children[2].children[2], P(30, -30), S_LINE, 12, 1, 0, 1); // head tumour
+  fig_add_child(&fig1.children[2].children[0], P(30, -30), S_LINE, 12, 1, 0, 1); // head tumour
 
   /*fig_save_to_memory(&fig1, "fig1.gff");*/
 
@@ -85,9 +85,10 @@ int main(int argc, char* argv[]) {
 }
 
 gboolean render(GtkWidget *widget, cairo_t *cr, gpointer data) {
-  g_cr = cr;
+  // CAN BE OPTIMIZED
   cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
 
+  // CAN PROBABLY BE OPTIMIZED
   GtkStyleContext *context = gtk_widget_get_style_context(widget);
   int width = gtk_widget_get_allocated_width(widget);
   int height = gtk_widget_get_allocated_height(widget);
@@ -96,6 +97,14 @@ gboolean render(GtkWidget *widget, cairo_t *cr, gpointer data) {
   gtk_style_context_get_color(context, gtk_style_context_get_state(context), &color);
 
   gtk_render_background(context, cr, 0, 0, width, height);
+
+  // draw frame background
+
+  GdkRGBA white = {1, 1, 1, 1};
+  gdk_cairo_set_source_rgba(cr, &white);
+  cairo_rectangle(cr, FRAME_MARGIN, FRAME_MARGIN, width-FRAME_MARGIN*2, height-FRAME_MARGIN*2);
+  cairo_fill(cr);
+  cairo_stroke(cr);
 
   figs_draw(&figs, cr);
 
