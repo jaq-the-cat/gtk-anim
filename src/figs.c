@@ -157,7 +157,7 @@ figure* fig_check_clicked(figure *fig, point p) {
   return fig_check_clicked_recursive(fig, p);
 }
 
-void move_figure_node_children(figure *fig, point old_parent_point, point new_parent_point, gdouble angle) {
+void move_figure_node_children(figure *fig, point old_parent_point, point new_parent_point) {
   if (old_parent_point.x == new_parent_point.x && old_parent_point.y == new_parent_point.y)
     // if the points are equal
     return;
@@ -172,6 +172,8 @@ void move_figure_node_children(figure *fig, point old_parent_point, point new_pa
       old_parent_point, fig->parent->parent->coor,
       fig->coor, old_parent_point);
 
+  printf("          angle: %lf°\n", correct_angle * 180 / G_PI);
+
   /*
    * Fix floating-point errors
    */
@@ -179,16 +181,22 @@ void move_figure_node_children(figure *fig, point old_parent_point, point new_pa
 
   // New angle of node relative to parent
   gdouble new_angle = angle_between(new_parent_point, fig->parent->parent->coor, fig->coor, new_parent_point);
+  printf("      new angle: %lf°\n", new_angle * 180 / G_PI);
 
   // Get angle error and fix
   gdouble angle_error = correct_angle - new_angle;
-  printf("angle error: %lf\n", angle_error);
+  printf("    angle error: %lf°\n", angle_error * 180 / G_PI);
   if (angle_error != 0)
     rotate_around(&fig->coor, new_parent_point, angle_error);
 
+  gdouble angle_after_fix = angle_between(new_parent_point, fig->parent->parent->coor, fig->coor, new_parent_point);
+  printf("angle after fix: %lf°\n", angle_after_fix * 180 / G_PI);
+
+  printf("\n");
+
   for (int i=0; i<fig->children_count; i++) {
     figure *child = &fig->children[i];
-    move_figure_node_children(child, old_parent_point_this, fig->coor, angle);
+    move_figure_node_children(child, old_parent_point_this, fig->coor);
   }
 }
 
@@ -219,7 +227,7 @@ void move_figure_node(figure *fig, point p) {
       gdouble angle = angle_between(
           old_figcoor, fig->parent->coor,
           fig->coor, fig->parent->coor);
-      move_figure_node_children(child, old_figcoor, fig->coor, angle);
+      move_figure_node_children(child, old_figcoor, fig->coor);
     }
   }
 }

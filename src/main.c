@@ -31,9 +31,7 @@ void init_state() {
 
   fig_add_child(&fig1.children[2].children[2], P(30, -30), S_LINE, 12, 1, 0, 1); // head tumour
 
-
-
-  fig_save_to_memory(&fig1, "fig1.gff");
+  /*fig_save_to_memory(&fig1, "fig1.gff");*/
 
   /*fig1 = fig_load_from_memory("fig1.gff");*/
 
