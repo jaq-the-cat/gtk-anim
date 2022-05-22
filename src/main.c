@@ -31,10 +31,10 @@ void init_state() {
   fig1.children[2].children[0] = FIG(&fig1.children[2], R(0, -60-40), S_FILLEDCIRCLE, 12, 0, 0.3, 1, 0); // head
   fig1.children[2].children[1] = FIG(&fig1.children[2], R(-30, -60+50), S_LINE, 12, 0, 0.3, 1, 0); // left arm
                                                                                                    //
-  fig1.children[2].children[2] = FIG(&fig1.children[2], R(30, -60+50), S_LINE, 12, 0, 0.3, 1, 0); // right arm
+  /*fig1.children[2].children[2] = FIG(&fig1.children[2], R(30, -60+50), S_LINE, 12, 0, 0.3, 1, 0); // right arm*/
 
-  /*fig1.children[2].children[2] = FIG(&fig1.children[2], R(30, -60+50), S_LINE, 12, 0, 0.3, 1, 1); // right arm*/
-  /*fig1.children[2].children[2].children[0] = FIG(&fig1.children[2], R(30+30, -60+50+20), S_LINE, 12, 0, 0.3, 1, 0); // right arm tumour*/
+  fig1.children[2].children[2] = FIG(&fig1.children[2], R(30, -60+50), S_LINE, 12, 0, 0.3, 1, 1); // right arm
+  fig1.children[2].children[2].children[0] = FIG(&fig1.children[2].children[2], R(30+30, -60+50+20), S_LINE, 12, 1, 0, 1, 0); // right arm tumour
 
   /*fig1.children[2] = FIG(&fig1, R(0, -60), S_LINE, 12, 0, 0.3, 1, 1); // body*/
   /*fig1.children[2].children[0] = FIG(&fig1.children[2], R(0, -60-40), S_FILLEDCIRCLE, 12, 0, 0.3, 1, 0); // head*/
@@ -115,7 +115,6 @@ gboolean da_button_press(GtkWidget *area, GdkEventButton *event, gpointer data) 
 gboolean da_motion(GtkWidget *area, GdkEventButton *event, gpointer data) {
   if (is_moving_node && moving_node != NULL) { // moving node
     move_figure_node(moving_node, P(event->x, event->y));
-  } else { // not moving node
   }
   gtk_widget_queue_draw(area);
   return TRUE;

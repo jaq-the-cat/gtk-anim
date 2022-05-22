@@ -126,43 +126,49 @@ figure* fig_check_clicked(figure *fig, point p) {
   return fig_check_clicked_recursive(fig, p);
 }
 
-void move_figure_node_children(figure *fig, point centerp, point oldpp, point newpp) {
-  if (oldpp.x == newpp.x && oldpp.y == newpp.y)
+void move_figure_node_children(figure *fig, point old_parent_point, point new_parent_point) {
+  if (old_parent_point.x == new_parent_point.x && old_parent_point.y == new_parent_point.y)
     // if the points are equal
     return;
+
+  point old_parent_point_this = fig->coor;
 
   /*
    * Save data for floating-point errors later
    */
-  gdouble correct_length = point_distance(fig->coor, oldpp); 
+  gdouble correct_length = point_distance(fig->coor, old_parent_point); 
   // angle of node relative to parent
-  gdouble correct_angle = angle_between(oldpp, centerp, fig->coor, oldpp);
+  gdouble correct_angle = angle_between(
+      old_parent_point, fig->parent->parent->coor,
+      fig->coor, old_parent_point);
 
   /*
    * Rotate node with parent
    */
   // rotate around relative to old parent position
-  gdouble angle = angle_between(oldpp, centerp, newpp, centerp);
-  rotate_around(&fig->coor, newpp, angle);
+  gdouble angle = angle_between(
+      old_parent_point, fig->parent->parent->coor,
+      new_parent_point, fig->parent->parent->coor);
+  rotate_around(&fig->coor, new_parent_point, angle);
   // shift so they match the new parent position
-  fig->coor.x += newpp.x - oldpp.x;
-  fig->coor.y += newpp.y - oldpp.y;
+  fig->coor.x += new_parent_point.x - old_parent_point.x;
+  fig->coor.y += new_parent_point.y - old_parent_point.y;
 
   /*
    * Fix floating-point errors
    */
-  limit_length(newpp, fig->coor, correct_length, &fig->coor);
+  limit_length(new_parent_point, fig->coor, correct_length, &fig->coor);
 
   // new angle of node relative to parent
-  gdouble new_angle = angle_between(newpp, centerp, fig->coor, newpp);
+  gdouble new_angle = angle_between(new_parent_point, fig->parent->parent->coor, fig->coor, new_parent_point);
   gdouble angle_error = new_angle - correct_angle;
   printf("angle error: %lf\n", angle_error);
   if (angle_error != 0)
-    rotate_around(&fig->coor, newpp, -angle_error);
+    rotate_around(&fig->coor, new_parent_point, -angle_error);
 
   for (int i=0; i<fig->children_count; i++) {
     figure *child = &fig->children[i];
-    move_figure_node_children(child, centerp, oldpp, newpp);
+    move_figure_node_children(child, old_parent_point_this, fig->coor);
   }
 }
 
@@ -183,13 +189,15 @@ void move_figure_node(figure *fig, point p) {
     move_figure_node_static(fig, p);
   } else {
     // if its not a root node
-    point old_figcoor = P(fig->coor.x, fig->coor.y);
+    point old_figcoor = fig->coor;
     gdouble length = point_distance(fig->parent->coor, fig->coor);
+    printf("LENGTH: %lf\n", length);
     limit_length(fig->parent->coor, p, length, &fig->coor);
+
     // fig->x and fig->y now on proper position
     for (int i=0; i<fig->children_count; i++) {
       figure *child = &fig->children[i];
-      move_figure_node_children(child, fig->parent->coor, old_figcoor, fig->coor);
+      move_figure_node_children(child, old_figcoor, fig->coor);
     }
   }
 }
