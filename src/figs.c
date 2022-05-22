@@ -3,6 +3,37 @@
 #include <math.h>
 #include <stdbool.h>
 
+void fig_add_child(figure *parent, point offset, guint8 shp, gdouble thickness, float r, float g, float b) {
+  parent->children_count++;
+  // reallocate to children_count+1
+  parent->children = realloc(parent->children, (parent->children_count)*sizeof(figure));
+  point p = P(parent->coor.x + offset.x, parent->coor.y + offset.y);
+  parent->children[parent->children_count-1] = FIG(parent, p, shp, thickness, r, g, b, 0);
+}
+
+void fig_remove_child(figure *parent, figure *child) {
+  gboolean found = false;
+  int i;
+  for (i=0; i<parent->children_count; i++) {
+    if (&parent->children[i] == child) {
+      found = true;
+      break;
+    }
+  }
+
+  if (found) {
+    if (i == parent->children_count-1) {
+      // last child
+      parent->children = realloc(parent->children, (parent->children_count-1)*sizeof(figure));
+    } else {
+      for (; i<parent->children_count-1; i++)
+        // for each child, set it to be equal to the next
+        parent->children[i] = parent->children[i+1];
+    }
+    parent->children_count--;
+  }
+}
+
 void fig_write_to_file(figure *fig, FILE* f) {
   // remove children so it doesnt write junk
   figure_nc no_child = (figure_nc) {
@@ -208,6 +239,8 @@ void fig_free(figure *fig) {
     child = &fig->children[i];
     fig_free(child);
   }
+  free(fig->children);
+  fig->children_count = 0;
 }
 
 void fig_add() {

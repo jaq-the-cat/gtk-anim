@@ -34,6 +34,8 @@ typedef struct figure_nc { // no children
   guint16 children_count;
 } figure_nc;
 
+void fig_add_child(figure *parent, point offset, guint8 shp, gdouble thickness, float r, float g, float b);
+
 void fig_save_to_memory(figure *fig, char* filename);
 figure fig_load_from_memory(char* filename);
 void fig_draw(figure *fig, cairo_t *cr);
