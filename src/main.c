@@ -1,3 +1,5 @@
+#ifdef __unix__
+// OS is Unix-based
 #include <stdio.h>
 #include <stdbool.h>
 #include <gtk-3.0/gtk/gtk.h>
@@ -5,6 +7,18 @@
 #include "macros.h"
 #include "figs.h"
 #include "figs_ll.h"
+
+#elif defined(_WIN32) || defined(WIN32)
+// OS is Windows-based
+
+#endif
+
+#ifdef _PROD
+// path to app.glade in production mode
+#define GLADE_PATH "app.glade"
+#else
+#define GLADE_PATH "app.glade"
+#endif
 
 WIDGET_S(window, "main_window");
 WIDGET_S(drawing_area, "drawing_area");
@@ -44,7 +58,7 @@ int main(int argc, char* argv[]) {
 
   // Load glade file
   GtkBuilder *builder = gtk_builder_new();
-  gtk_builder_add_from_file(builder, "app.glade", NULL);
+  gtk_builder_add_from_file(builder, GLADE_PATH, NULL);
 
   // Get main window from glade
   init_window(builder);
