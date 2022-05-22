@@ -48,7 +48,6 @@ double angle_between(point _from, point _from_origin, point _to, point _to_origi
 
   if (isnan(angle))
     return 0;
-
   if (cross(from, to) < 0)
     return -angle;
   return angle;

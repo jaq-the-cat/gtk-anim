@@ -29,7 +29,7 @@ void init_state() {
   fig_add_child(&fig1.children[2], P(-30, 50), S_LINE, 12, 0, 0.3, 1); // left arm
   fig_add_child(&fig1.children[2], P(30, 50), S_LINE, 12, 0, 0.3, 1); // right arm
 
-  fig_add_child(&fig1.children[2].children[0], P(30, -30), S_LINE, 12, 1, 0, 1); // head tumour
+  fig_add_child(&fig1.children[2].children[2], P(30, -30), S_LINE, 12, 1, 0, 1); // head tumour
 
 
 
