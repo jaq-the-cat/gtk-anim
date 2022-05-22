@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <gtk-3.0/gtk/gtk.h>
 
+#include "draw.h"
 #include "macros.h"
 #include "figs.h"
 #include "figs_ll.h"
@@ -122,9 +123,12 @@ gboolean render(GtkWidget *widget, cairo_t *cr, gpointer data) {
   gtk_render_background(context, buffer, 0, 0, width, height);
 
   // draw frame background
+  gdk_cairo_set_source_rgba(buffer, &GRAY);
+  cairo_rectangle(buffer, 0, 0, width, height);
+  cairo_fill(buffer);
+  cairo_stroke(buffer);
 
-  GdkRGBA white = {1, 1, 1, 1};
-  gdk_cairo_set_source_rgba(buffer, &white);
+  gdk_cairo_set_source_rgba(buffer, &WHITE);
   cairo_rectangle(buffer, FRAME_MARGIN, FRAME_MARGIN, width-FRAME_MARGIN*2, height-FRAME_MARGIN*2);
   cairo_fill(buffer);
   cairo_stroke(buffer);

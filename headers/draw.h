@@ -6,6 +6,13 @@
 #define NT_ROOT 0
 #define NT_OTHER 1
 
+extern const GdkRGBA WHITE;
+extern const GdkRGBA GRAY;
+
+extern const GdkRGBA RED;
+extern const GdkRGBA ORANGE;
+extern const GdkRGBA BLACK;
+
 gdouble point_distance(point p0, point p1);
 void draw_line(cairo_t *cr, GdkRGBA *color, point p0, point p1, gdouble width);
 void draw_filled(cairo_t *cr, GdkRGBA *color, point p0, point p1, gdouble width);

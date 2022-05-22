@@ -2,6 +2,8 @@
 #include <math.h>
 
 const GdkRGBA WHITE = {1, 1, 1, 1};
+const GdkRGBA GRAY = {0.85, 0.85, 0.85, 1};
+
 const GdkRGBA RED = {1, 0, 0, 1};
 const GdkRGBA ORANGE = {1, 0.5, 0, 1};
 const GdkRGBA BLACK = {0, 0, 0, 1};
