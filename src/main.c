@@ -35,15 +35,15 @@ static figure fig1, fig2;
 static cairo_surface_t *sfc;
 
 void init_state() {
-  fig1 = FIG(NULL, P(200, 200), S_LINE, 60, 0, 0.3, 1, 0);
+  fig1 = FIG(NULL, P(200, 200), S_LINE, 12, 0, 0.3, 1, 0);
 
-  fig_add_child(&fig1, P(-30, 60), S_LINE, 60, 0, 0.3, 1); // left leg
-  fig_add_child(&fig1, P(30, 60), S_LINE, 60, 0, 0.3, 1); // right leg
-  fig_add_child(&fig1, P(0, -60), S_LINE, 60, 0, 0.3, 1); // torso
+  fig_add_child(&fig1, P(-30, 60), S_LINE, 12, 0, 0.3, 1); // left leg
+  fig_add_child(&fig1, P(30, 60), S_LINE, 12, 0, 0.3, 1); // right leg
+  fig_add_child(&fig1, P(0, -60), S_LINE, 12, 0, 0.3, 1); // torso
 
-  fig_add_child(&fig1.children[2], P(0, -40), S_FILLEDCIRCLE, 60, 0, 0.3, 1); // head
-  fig_add_child(&fig1.children[2], P(-30, 50), S_LINE, 60, 0, 0.3, 1); // left arm
-  fig_add_child(&fig1.children[2], P(30, 50), S_LINE, 60, 0, 0.3, 1); // right arm
+  fig_add_child(&fig1.children[2], P(0, -40), S_FILLEDCIRCLE, 12, 0, 0.3, 1); // head
+  fig_add_child(&fig1.children[2], P(-30, 50), S_LINE, 12, 0, 0.3, 1); // left arm
+  fig_add_child(&fig1.children[2], P(30, 50), S_LINE, 12, 0, 0.3, 1); // right arm
 
   /*fig_save_to_memory(&fig1, "fig1.gff");*/
 
@@ -84,9 +84,32 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
+void sfc_clear() {
+  cairo_t *cr;
+  cr = cairo_create(sfc);
+  cairo_set_source_rgb(cr, 1, 1, 1);
+  cairo_paint(cr);
+  cairo_destroy(cr);
+}
+
+gboolean da_config(GtkWidget *widget, GdkEventConfigure *event, gpointer data) {
+  if (sfc)
+    cairo_surface_destroy(sfc);
+  sfc = gdk_window_create_similar_surface(
+      gtk_widget_get_window(widget), CAIRO_CONTENT_COLOR,
+      gtk_widget_get_allocated_width(widget),
+      gtk_widget_get_allocated_height(widget));
+  sfc_clear();
+
+  return TRUE;
+}
+
 gboolean render(GtkWidget *widget, cairo_t *cr, gpointer data) {
+
+  cairo_t *buffer = cairo_create(sfc);
+
   // CAN BE OPTIMIZED
-  cairo_set_line_cap(cr, CAIRO_LINE_CAP_ROUND);
+  cairo_set_line_cap(buffer, CAIRO_LINE_CAP_ROUND);
 
   // CAN PROBABLY BE OPTIMIZED
   GtkStyleContext *context = gtk_widget_get_style_context(widget);
@@ -96,17 +119,20 @@ gboolean render(GtkWidget *widget, cairo_t *cr, gpointer data) {
   GdkRGBA color;
   gtk_style_context_get_color(context, gtk_style_context_get_state(context), &color);
 
-  gtk_render_background(context, cr, 0, 0, width, height);
+  gtk_render_background(context, buffer, 0, 0, width, height);
 
   // draw frame background
 
   GdkRGBA white = {1, 1, 1, 1};
-  gdk_cairo_set_source_rgba(cr, &white);
-  cairo_rectangle(cr, FRAME_MARGIN, FRAME_MARGIN, width-FRAME_MARGIN*2, height-FRAME_MARGIN*2);
-  cairo_fill(cr);
-  cairo_stroke(cr);
+  gdk_cairo_set_source_rgba(buffer, &white);
+  cairo_rectangle(buffer, FRAME_MARGIN, FRAME_MARGIN, width-FRAME_MARGIN*2, height-FRAME_MARGIN*2);
+  cairo_fill(buffer);
+  cairo_stroke(buffer);
 
-  figs_draw(&figs, cr);
+  figs_draw(&figs, buffer);
+
+  cairo_set_source_surface(cr, sfc, 0, 0);
+  cairo_paint(cr);
 
   return FALSE;
 }
@@ -126,8 +152,8 @@ gboolean da_button_press(GtkWidget *area, GdkEventButton *event, gpointer data) 
 gboolean da_motion(GtkWidget *area, GdkEventButton *event, gpointer data) {
   if (is_moving_node && moving_node != NULL) { // moving node
     move_figure_node(moving_node, P(event->x, event->y));
+    gtk_widget_queue_draw(area);
   }
-  gtk_widget_queue_draw(area);
   return TRUE;
 }
 

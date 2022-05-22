@@ -393,6 +393,7 @@
                 <property name="is-focus">True</property>
                 <property name="double-buffered">False</property>
                 <signal name="button-press-event" handler="da_button_press" swapped="no"/>
+                <signal name="configure-event" handler="da_config" swapped="no"/>
                 <signal name="draw" handler="render" swapped="no"/>
                 <signal name="motion-notify-event" handler="da_motion" swapped="no"/>
               </object>
