@@ -192,10 +192,10 @@ void move_figure_node_children(figure *fig, point old_parent_point, point new_pa
 
   // new angle of node relative to parent
   gdouble new_angle = angle_between(new_parent_point, fig->parent->parent->coor, fig->coor, new_parent_point);
-  gdouble angle_error = new_angle - correct_angle;
+  gdouble angle_error = correct_angle - new_angle;
   printf("angle error: %lf\n", angle_error);
   if (angle_error != 0)
-    rotate_around(&fig->coor, new_parent_point, -angle_error);
+    rotate_around(&fig->coor, new_parent_point, angle_error);
 
   for (int i=0; i<fig->children_count; i++) {
     figure *child = &fig->children[i];
