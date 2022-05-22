@@ -32,6 +32,8 @@ static figures figs = FIGS_LL;
 
 static figure fig1, fig2;
 
+static cairo_surface_t *sfc;
+
 void init_state() {
   fig1 = FIG(NULL, P(200, 200), S_LINE, 12, 0, 0.3, 1, 0);
 

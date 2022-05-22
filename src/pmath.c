@@ -43,6 +43,8 @@ double angle_between(point _from, point _from_origin, point _to, point _to_origi
   point from = P(_from.x - _from_origin.x, _from.y - _from_origin.y);
   point to = P(_to.x - _to_origin.x, _to.y - _to_origin.y);
 
+  printf("COMPARING (%lf, %lf) TO (%lf, %lf)\n", from.x, from.y, to.x, to.y);
+
   // angle in radians, points relative to (0, 0)
   double angle = acos(dot(from, to) / (mag(from)*mag(to)));
 
