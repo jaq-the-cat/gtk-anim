@@ -8,7 +8,7 @@ void fig_add_child(figure *parent, point offset, guint8 shp, gdouble thickness, 
   // reallocate to children_count+1
   parent->children = realloc(parent->children, (parent->children_count)*sizeof(figure));
   point p = P(parent->coor.x + offset.x, parent->coor.y + offset.y);
-  parent->children[parent->children_count-1] = FIG(parent, p, shp, thickness, r, g, b, 0);
+  parent->children[parent->children_count-1] = FIG(PARENT(&parent->parent, &parent->coor), p, shp, thickness, r, g, b, 0);
 }
 
 void fig_remove_child(figure *parent, figure *child) {
@@ -55,7 +55,7 @@ figure fig_read_from_file(FILE* f){
 
   int read = fread(&fig_nc, sizeof(figure_nc), 1, f);
   figure fig = (figure) {
-    NULL,
+    PARENT(NULL, NULL),
     fig_nc.coor.x, fig_nc.coor.y,
     fig_nc.shp,
     fig_nc.thickness,
@@ -66,7 +66,7 @@ figure fig_read_from_file(FILE* f){
 
   for (int i=0; i<fig.children_count; i++) {
     fig.children[i] = fig_read_from_file(f);
-    fig.children[i].parent = &fig;
+    fig.children[i].parent = PARENT(&fig.parent, &fig.coor);
   }
 
   return fig;
@@ -135,7 +135,7 @@ void fig_draw_recursive_nodes(figure *fig, cairo_t *cr, bool is_root) {
 
 void fig_draw(figure *fig, cairo_t *cr) {
   fig_draw_recursive(fig, cr);
-  fig_draw_recursive_nodes(fig, cr, fig->parent == NULL);
+  fig_draw_recursive_nodes(fig, cr, fig->parent.coor == NULL);
 }
 
 figure* fig_check_clicked_recursive(figure *fig, point p) {
@@ -158,7 +158,7 @@ figure* fig_check_clicked(figure *fig, point p) {
 }
 
 void move_figure_node_children(figure *fig, point old_parent_point, point old_parent_parent_point) {
-  if (old_parent_point.x == fig->parent->coor.x && old_parent_point.y == fig->parent->coor.y)
+  if (old_parent_point.x == fig->parent.coor->x && old_parent_point.y == fig->parent.coor->y)
     // if the points are equal
     return;
 
@@ -176,17 +176,17 @@ void move_figure_node_children(figure *fig, point old_parent_point, point old_pa
   /*
    * Fix floating-point errors
    */
-  limit_length(fig->parent->coor, fig->coor, correct_length, &fig->coor);
+  limit_length(*fig->parent.coor, fig->coor, correct_length, &fig->coor);
 
   // New angle of node relative to parent
-  gdouble new_angle = angle_between(fig->parent->coor, fig->parent->parent->coor, fig->coor, fig->parent->coor);
+  gdouble new_angle = angle_between(*fig->parent.coor, *fig->parent.parent->coor, fig->coor, *fig->parent.coor);
 
   // Get angle error and fix
   gdouble angle_error = correct_angle - new_angle;
   if (angle_error != 0)
-    rotate_around(&fig->coor, fig->parent->coor, angle_error);
+    rotate_around(&fig->coor, *fig->parent.coor, angle_error);
 
-  gdouble angle_after_fix = angle_between(fig->parent->coor, fig->parent->parent->coor, fig->coor, fig->parent->coor);
+  gdouble angle_after_fix = angle_between(*fig->parent.coor, *fig->parent.parent->coor, fig->coor, *fig->parent.coor);
 
   for (int i=0; i<fig->children_count; i++) {
     figure *child = &fig->children[i];
@@ -206,22 +206,22 @@ void move_figure_node_static(figure *fig, point p) {
 }
 
 void move_figure_node(figure *fig, point p) {
-  if (fig->parent == NULL) {
+  if (fig->parent.coor == NULL) {
     // if its a root node, move the whole thing
     move_figure_node_static(fig, p);
   } else {
     // if its not a root node
     point old_figcoor = fig->coor;
-    gdouble length = point_distance(fig->parent->coor, fig->coor);
-    limit_length(fig->parent->coor, p, length, &fig->coor);
+    gdouble length = point_distance(*fig->parent.coor, fig->coor);
+    limit_length(*fig->parent.coor, p, length, &fig->coor);
 
     // fig->x and fig->y now on proper position
     for (int i=0; i<fig->children_count; i++) {
       figure *child = &fig->children[i];
       gdouble angle = angle_between(
-          old_figcoor, fig->parent->coor,
-          fig->coor, fig->parent->coor);
-      move_figure_node_children(child, old_figcoor, fig->parent->coor);
+          old_figcoor, *fig->parent.coor,
+          fig->coor, *fig->parent.coor);
+      move_figure_node_children(child, old_figcoor, *fig->parent.coor);
     }
   }
 }

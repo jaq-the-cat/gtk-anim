@@ -36,7 +36,7 @@ static figure fig1, fig2;
 static cairo_surface_t *sfc;
 
 void init_state() {
-  fig1 = FIG(NULL, P(200, 200), S_LINE, 12, 0, 0.3, 1, 0);
+  fig1 = FIG(PARENT(NULL, NULL), P(200, 200), S_LINE, 12, 0, 0.3, 1, 0);
 
   fig_add_child(&fig1, P(-30, 60), S_LINE, 12, 0, 0.3, 1); // left leg
   fig_add_child(&fig1, P(30, 60), S_LINE, 12, 0, 0.3, 1); // right leg

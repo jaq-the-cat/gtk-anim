@@ -16,8 +16,15 @@
     malloc(sizeof(figure)*children_count)\
   }
 
+#define PARENT(parent, coor) (dad) {parent, coor}
+
+typedef struct dad {
+  struct dad *parent;
+  point *coor;
+} dad;
+
 typedef struct figure {
-  struct figure* parent;
+  struct dad parent;
   point coor; // endpoint x and y (root is parent node)
   guint8 shp : 2; // shape of current node
   gdouble thickness;
