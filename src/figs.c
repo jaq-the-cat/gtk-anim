@@ -1,14 +1,13 @@
 #include "figs.h"
 #include "draw.h"
 #include <math.h>
-#include <stdbool.h>
 
-void fig_add_child(figure *parent, point offset, guint8 shp, gdouble thickness, float r, float g, float b) {
+void fig_add_child(figure *parent, point offset, guint8 shp, guint8 depth, gdouble thickness, float r, float g, float b) {
   parent->children_count++;
   // reallocate to children_count+1
   parent->children = realloc(parent->children, (parent->children_count)*sizeof(figure));
   point p = P(parent->coor.x + offset.x, parent->coor.y + offset.y);
-  parent->children[parent->children_count-1] = FIG(PARENT(&parent->parent, &parent->coor), p, shp, thickness, r, g, b, 0);
+  parent->children[parent->children_count-1] = FIG(PARENT(&parent->parent, &parent->coor), p, shp, depth, thickness, r, g, b, 0);
 }
 
 void fig_remove_child(figure *parent, figure *child) {
@@ -39,6 +38,7 @@ void fig_write_to_file(figure *fig, FILE* f) {
   figure_nc no_child = (figure_nc) {
     fig->coor.x, fig->coor.y,
     fig->shp,
+    fig->depth,
     fig->thickness,
     fig->color,
     fig->children_count,
@@ -58,6 +58,7 @@ figure fig_read_from_file(FILE* f){
     PARENT(NULL, NULL),
     fig_nc.coor.x, fig_nc.coor.y,
     fig_nc.shp,
+    fig_nc.depth,
     fig_nc.thickness,
     fig_nc.color,
     fig_nc.children_count,
@@ -123,9 +124,9 @@ void fig_draw_recursive(figure *fig, cairo_t *cr) {
   }
 }
 
-void fig_draw_recursive_nodes(figure *fig, cairo_t *cr, bool is_root) {
+void fig_draw_nodes(figure *fig, cairo_t *cr, bool is_root) {
   for (int i=0; i<fig->children_count; i++)
-    fig_draw_recursive_nodes(&fig->children[i], cr, false);
+    fig_draw_nodes(&fig->children[i], cr, false);
   if (is_root) {
     draw_node(cr, NT_ROOT, fig->coor);
   } else {
@@ -135,7 +136,26 @@ void fig_draw_recursive_nodes(figure *fig, cairo_t *cr, bool is_root) {
 
 void fig_draw(figure *fig, cairo_t *cr) {
   fig_draw_recursive(fig, cr);
-  fig_draw_recursive_nodes(fig, cr, fig->parent.coor == NULL);
+  fig_draw_nodes(fig, cr, fig->parent.coor == NULL);
+}
+
+void fig_draw_segment(figure *fig, cairo_t *cr) {
+  switch (fig->shp) {
+    case S_LINE:
+      draw_line(cr, &fig->color, *fig->parent.coor, fig->coor, fig->thickness);
+      break;
+    case S_FILLEDCIRCLE:
+      draw_filled(cr, &fig->color, *fig->parent.coor, fig->coor, fig->thickness);
+      break;
+    case S_WHITECIRCLE:
+      draw_white(cr, &fig->color, *fig->parent.coor, fig->coor, fig->thickness);
+      break;
+    case S_EMPTYCIRCLE:
+      draw_empty(cr, &fig->color, *fig->parent.coor, fig->coor, fig->thickness);
+      break;
+    default:
+      break;
+  }
 }
 
 figure* fig_check_clicked_recursive(figure *fig, point p) {
