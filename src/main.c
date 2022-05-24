@@ -42,8 +42,8 @@ void init_state() {
   fig_add_child(&fig1, P(30, 60), S_LINE, 0, 12, 0, 0.3, 1); // right leg
   fig_add_child(&fig1, P(0, -60), S_LINE, 0, 12, 0, 0.3, 1); // torso
 
-  fig_add_child(&fig1.children[2], P(0, -40), S_FILLEDCIRCLE, 2, 12, 1, 0.3, 1); // head
-  fig_add_child(&fig1.children[2], P(-30, 50), S_LINE, 0, 12, 0, 0.3, 1); // left arm
+  fig_add_child(&fig1.children[2], P(0, -40), S_FILLEDCIRCLE, 0, 12, 1, 0.3, 1); // head
+  fig_add_child(&fig1.children[2], P(-30, 50), S_LINE, 3, 12, 0, 1, 1); // left arm
   fig_add_child(&fig1.children[2], P(30, 50), S_LINE, 0, 12, 0, 0.3, 1); // right arm
 
   /*fig_save_to_memory(&fig1, "fig1.gff");*/
