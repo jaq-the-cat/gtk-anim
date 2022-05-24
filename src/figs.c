@@ -93,37 +93,6 @@ figure fig_load_from_memory(char* filename) {
   return fig;
 }
 
-// parameters for use in fig_draw_recursive
-#define _params cr,\
-  &child->color,\
-  fig->coor,\
-  child->coor,\
-  child->thickness\
-
-void fig_draw_recursive(figure *fig, cairo_t *cr) {
-  figure *child;
-  for (int i=0; i<fig->children_count; i++) {
-    child = &fig->children[i];
-    switch (child->shp) {
-      case S_LINE:
-        draw_line(_params);
-        break;
-      case S_FILLEDCIRCLE:
-        draw_filled(_params);
-        break;
-      case S_WHITECIRCLE:
-        draw_white(_params);
-        break;
-      case S_EMPTYCIRCLE:
-        draw_empty(_params);
-        break;
-      default:
-        break;
-    }
-    fig_draw_recursive(child, cr);
-  }
-}
-
 void fig_draw_nodes(figure *fig, cairo_t *cr, bool is_root) {
   for (int i=0; i<fig->children_count; i++)
     fig_draw_nodes(&fig->children[i], cr, false);
@@ -132,11 +101,6 @@ void fig_draw_nodes(figure *fig, cairo_t *cr, bool is_root) {
   } else {
     draw_node(cr, NT_OTHER, fig->coor);
   }
-}
-
-void fig_draw(figure *fig, cairo_t *cr) {
-  fig_draw_recursive(fig, cr);
-  fig_draw_nodes(fig, cr, fig->parent.coor == NULL);
 }
 
 void fig_draw_segment(figure *fig, cairo_t *cr) {

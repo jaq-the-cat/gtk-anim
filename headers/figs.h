@@ -48,7 +48,6 @@ void fig_add_child(figure *parent, point offset, guint8 shp, guint8 depth, gdoub
 
 void fig_save_to_memory(figure *fig, char* filename);
 figure fig_load_from_memory(char* filename);
-void fig_draw(figure *fig, cairo_t *cr);
 void fig_draw_nodes(figure *fig, cairo_t *cr, bool is_root);
 void fig_draw_segment(figure *fig, cairo_t *cr);
 void fig_free(figure *fig);
