@@ -36,7 +36,7 @@ void fig_remove_child(figure *parent, figure *child) {
 void fig_write_to_file(figure *fig, FILE* f) {
   // remove children so it doesnt write junk
   figure_nc no_child = (figure_nc) {
-    fig->coor.x, fig->coor.y,
+    fig->coor,
     fig->shp,
     fig->depth,
     fig->thickness,
@@ -47,30 +47,25 @@ void fig_write_to_file(figure *fig, FILE* f) {
   for (int i=0; i<fig->children_count; i++) {
     fig_write_to_file(&fig->children[i], f);
   }
-  // (fig 3) (fig 0) (fig 0) (fig 2) (fig) (fig)
 }
 
-figure fig_read_from_file(FILE* f){
+void fig_read_from_file(FILE* f, figure *fig){
   figure_nc fig_nc;
 
   int read = fread(&fig_nc, sizeof(figure_nc), 1, f);
-  figure fig = (figure) {
-    PARENT(NULL, NULL),
-    fig_nc.coor.x, fig_nc.coor.y,
-    fig_nc.shp,
-    fig_nc.depth,
-    fig_nc.thickness,
-    fig_nc.color,
-    fig_nc.children_count,
-    malloc(sizeof(figure)*fig_nc.children_count) // allocate array of children in mem
-  };
+  fig->parent = PARENT(NULL, NULL);
+  fig->coor = fig_nc.coor;
+  fig->shp = fig_nc.shp;
+  fig->depth = fig_nc.depth;
+  fig->thickness = fig_nc.thickness;
+  fig->color = fig_nc.color;
+  fig->children_count = fig_nc.children_count;
+  fig->children = malloc(sizeof(figure)*fig_nc.children_count);
 
-  for (int i=0; i<fig.children_count; i++) {
-    fig.children[i] = fig_read_from_file(f);
-    fig.children[i].parent = PARENT(&fig.parent, &fig.coor);
+  for (int i=0; i<fig->children_count; i++) {
+    fig_read_from_file(f, &fig->children[i]);
+    fig->children[i].parent = PARENT(&fig->parent, &fig->coor);
   }
-
-  return fig;
 }
 
 void fig_save_to_memory(figure *fig, char* filename) {
@@ -82,15 +77,14 @@ void fig_save_to_memory(figure *fig, char* filename) {
   fclose(f);
 }
 
-figure fig_load_from_memory(char* filename) {
+void fig_load_from_memory(char* filename, figure *fig) {
   FILE *f = fopen(filename, "rb");
   if (!f) {
     perror("Error opening file in fig_unseralize (maybe it doesn't exist?)");
   }
 
-  figure fig = fig_read_from_file(f);
+  fig_read_from_file(f, fig);
   fclose(f);
-  return fig;
 }
 
 void fig_draw_nodes(figure *fig, cairo_t *cr, bool is_root) {

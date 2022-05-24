@@ -25,7 +25,6 @@ bool figs_remove_from_list(figures *list, figure *data);
 void figs_delete_list(figures *list);
 
 // declare draw map func
-void figs_draw(figures *list, cairo_t *cr);
 void figs_draw_depth(figures *list, cairo_t *cr);
 
 // click check func

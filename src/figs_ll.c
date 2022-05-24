@@ -127,12 +127,6 @@ void figs_delete_list(figures *list) {
 }
 
 // draw function
-void figs_draw(figures *list, cairo_t *cr) {
-  fig_draw(list->fig, cr);
-  if (list->next != NULL)
-    figs_draw(list->next, cr);
-}
-
 void _figs_draw_depth(figures_depth *node, cairo_t *cr) {
   if (node->segment == NULL)
     return;
@@ -145,7 +139,7 @@ void figs_draw_depth(figures *list, cairo_t *cr) {
   for (int i=0; i<16; i++) {
     _figs_draw_depth(&list->depth[i], cr);
   }
-  fig_draw_nodes(list->fig, cr, false);
+  fig_draw_nodes(list->fig, cr, true);
 }
 
 // check clicks

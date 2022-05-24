@@ -47,7 +47,7 @@ typedef struct figure_nc { // no children
 void fig_add_child(figure *parent, point offset, guint8 shp, guint8 depth, gdouble thickness, float r, float g, float b);
 
 void fig_save_to_memory(figure *fig, char* filename);
-figure fig_load_from_memory(char* filename);
+void fig_load_from_memory(char* filename, figure *fig);
 void fig_draw_nodes(figure *fig, cairo_t *cr, bool is_root);
 void fig_draw_segment(figure *fig, cairo_t *cr);
 void fig_free(figure *fig);

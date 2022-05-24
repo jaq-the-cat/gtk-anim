@@ -46,11 +46,11 @@ void init_state() {
   fig_add_child(&fig1.children[2], P(-30, 50), S_LINE, 3, 12, 0, 1, 1); // left arm
   fig_add_child(&fig1.children[2], P(30, 50), S_LINE, 0, 12, 0, 0.3, 1); // right arm
 
-  /*fig_save_to_memory(&fig1, "fig1.gff");*/
+  fig_save_to_memory(&fig1, "fig1.gff");
 
-  /*fig1 = fig_load_from_memory("fig1.gff");*/
+  fig_load_from_memory("fig1.gff", &fig2);
 
-  figs_add(&figs, &fig1);
+  figs_add(&figs, &fig2);
 }
 
 int main(int argc, char* argv[]) {
